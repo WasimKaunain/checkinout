@@ -1,0 +1,28 @@
+# Ignore database dumps
+*.sql
+*.dump
+
+# Ignore environment files (if storing DB credentials here)
+.env
+.env.local
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+
+# Ignore backup files
+*~
+*.bak
+
+# Ignore Python bytecode (if using Python)
+__pycache__/
+*.py[cod]
+
+# Ignore VSCode settings (optional)
+.vscode/
+
+#ignore pdf files
+*.pdf

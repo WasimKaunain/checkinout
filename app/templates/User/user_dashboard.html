@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select User Role</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f2fe, #dbeafe);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 700px;
+    }
+
+    h1 {
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    .role-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .role-box {
+      flex: 1 1 200px;
+      background-color: #f1f5ff;
+      padding: 30px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s;
+    }
+
+    .role-box:hover {
+      transform: translateY(-5px);
+    }
+
+    .role-box i {
+      font-size: 40px;
+      color: #2563eb;
+    }
+
+    .role-box h2 {
+      margin: 15px 0 10px;
+      color: #1e3a8a;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      text-decoration: none;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #1d4ed8;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 25px;
+      text-align: center;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Select Your Role</h1>
+
+    <div class="role-row">
+      <div class="role-box">
+        <i class="fas fa-user-tie"></i>
+        <h2>Staff</h2>
+        <a href="{{ url_for('staff.staff_login_register') }}" class="btn">Go To Staff </a>
+      </div>
+      <div class="role-box">
+        <i class="fas fa-user-friends"></i>
+        <h2>Visitor</h2>
+        <a href="{{ url_for('visitor.visitor_login_register') }}" class="btn">Go To Visitor</a>
+      </div>
+      <div class="role-box">
+        <i class="fas fa-user-graduate"></i>
+        <h2>Student</h2>
+        <a href="{{ url_for('student.student_login_register') }}" class="btn">Go To Student</a>
+      </div>
+    </div>
+
+    <a href="{{ url_for('main.home') }}" class="btn btn-primary">Return to Home</a>
+  </div>
+</body>
+</html>

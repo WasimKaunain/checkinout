@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Page</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #b3cfff, #dbeafe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .staff-box {
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.75);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .staff-box:hover {
+      transform: translateY(-5px);
+    }
+
+    i {
+      font-size: 48px;
+      color: #2563eb;
+      margin-bottom: 15px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn:hover {
+      background-color: #1e40af;
+      box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="staff-box">
+    <i class="fas fa-user-tie"></i>
+    <h1>Staff Page</h1>
+    <p>Welcome, Staff! Please choose an option:</p>
+
+    <a href="{{url_for('staff.staff_register')}}" class="btn">Registration</a>
+    <a href="{{url_for('staff.staff_login')}}" class="btn">Login</a>
+    <a href="{{url_for('main.home')}}" class="btn">← Back to Home</a>
+  </div>
+</body>
+</html>

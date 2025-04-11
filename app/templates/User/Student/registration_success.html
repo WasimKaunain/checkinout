@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 text-center">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <p>You will be redirected to login in <span id="countdown">5</span> seconds...</p>
+</div>
+
+<script>
+    let seconds = 5;
+    const countdown = document.getElementById("countdown");
+
+    setInterval(() => {
+        seconds--;
+        countdown.textContent = seconds;
+        if (seconds === 0) {
+            window.location.href = "{{ url_for('student.student_login') }}";
+        }
+    }, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Page</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #c2e9fb, #a1c4fd);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      backdrop-filter: blur(16px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.75);
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .box:hover { transform: translateY(-5px); }
+
+    i {
+      font-size: 48px;
+      color: #2563eb;
+      margin-bottom: 15px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #1e3a8a;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn:hover {
+      background-color: #1e40af;
+      box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <i class="fas fa-user-graduate"></i>
+    <h1>Student Page</h1>
+    <p>Welcome, Student! Please choose an option:</p>
+
+    <a href="{{url_for('student.student_register')}}" class="btn">Registration</a>
+    <a href="{{url_for('student.student_login')}}" class="btn">Login</a>
+    <a href="{{url_for('main.home')}}" class="btn">← Back to Home</a>
+  </div>
+</body>
+</html>

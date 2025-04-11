@@ -1,0 +1,169 @@
+/* === Global Styles === */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f4f4f4, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    color: #333;
+  }
+  
+  /* === Container Box for Login/Home Pages === */
+  .container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 400px;
+  }
+  
+  /* === Headings === */
+  h1 {
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  .section-title {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: left;
+  }
+  
+  /* === Sections === */
+  .section {
+    margin: 20px 0;
+  }
+  
+  /* === Button Styles === */
+  .btn,
+  .button-style {
+    display: block;
+    background-color: #5c67f2;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn:hover,
+  .button-style:hover {
+    background-color: #4a54e1;
+  }
+  
+  /* === Links (Forgot / Back) === */
+  .forgot-link,
+  .back-link {
+    display: block;
+    margin-top: 10px;
+    color: #5c67f2;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .forgot-link:hover,
+  .back-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* === User Options (Homepage Buttons) === */
+  .user-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+  }
+  
+  /* === Hostel Selector === */
+  #hostel-select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    transition: border-color 0.2s ease;
+  }
+  
+  #hostel-select:focus {
+    border-color: #5c67f2;
+    outline: none;
+  }
+  
+  .room-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .room-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .available {
+    background-color: #c8f7c5;
+  }
+  
+  .unavailable {
+    background-color: #f7c5c5;
+  }
+  
+  
+  .room:hover {
+    transform: scale(1.05);
+  }
+  
+  
+  /* === Table Styling === */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .table th {
+    background-color: #5c67f2;
+    color: white;
+  }
+  
+  /* === Card Styling (Dashboard Preview Blocks) === */
+  .card {
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #444;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+    text-align: center;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
