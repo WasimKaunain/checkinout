@@ -5,6 +5,7 @@
 # Ignore environment files (if storing DB credentials here)
 .env
 .env.local
+checkinout/
 
 # Ignore system files
 .DS_Store
@@ -26,3 +27,5 @@ __pycache__/
 
 #ignore pdf files
 *.pdf
+
+
