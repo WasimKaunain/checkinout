@@ -3,10 +3,16 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
+class UserIDCounter(db.Model):
+    __tablename__ = 'user_id_counters'
+
+    user_type = db.Column(db.String(10), primary_key=True, nullable=False)
+    current_number = db.Column(db.Integer, nullable=False)
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
-    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.String(10), primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Enum('Student', 'Visitor', 'Staff'), nullable=False)
@@ -16,7 +22,6 @@ class Student(db.Model):
     __tablename__ = 'students'
 
     roll_no = db.Column(db.String(20), primary_key=True, unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='SET NULL'), nullable=True)
     name = db.Column(db.String(50), nullable=False)
     department = db.Column(db.String(30), nullable=False)
     gender = db.Column(db.Enum('Male', 'Female', 'Other'), nullable=False)
@@ -26,7 +31,6 @@ class Student(db.Model):
     mess_id = db.Column(db.Integer, db.ForeignKey('mess.mess_id', ondelete='SET NULL'), nullable=True)
 
     # Optional: relationships (not strictly necessary unless you want to navigate back-references)
-    user = db.relationship('User', backref='student', lazy=True)
     mess = db.relationship('Mess', backref='students', lazy=True)
     hostel = db.relationship('Hostel', backref='students', lazy=True)
     room = db.relationship('HostelRoom', backref='students', lazy=True)
@@ -35,20 +39,17 @@ class Staff(db.Model):
     __tablename__ = 'staffs'
     
     staff_id = db.Column(db.String(20), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='SET NULL'))
     name = db.Column(db.String(50), nullable=False)
     department = db.Column(db.String(30), nullable=False)
     gender = db.Column(db.Enum('Male', 'Female', 'Other'), nullable=False)
     contact_no = db.Column(db.String(10), unique=True, nullable=False)
-    
-    # Optional: relationship to access User directly (assuming User.user_id exists)
-    user = db.relationship('User', backref='staffs', foreign_keys=[user_id])
+    email = db.Column(db.String(100), unique=True, nullable=False)
 
+    
 class Visitor(db.Model):
     __tablename__ = 'visitors'
 
     visitor_id = db.Column(db.String(20), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id', ondelete='SET NULL'))
     name = db.Column(db.String(50), nullable=False)
     contact_no = db.Column(db.String(10), unique=True, nullable=False)
     gender = db.Column(db.Enum('Male', 'Female', 'Other'), nullable=False)

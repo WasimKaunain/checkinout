@@ -83,7 +83,7 @@
 <body>
   <div class="form-box">
     <h1><i class="fas fa-user-plus"></i> Staff Registration</h1>
-    <form action="staff_register.php" method="POST">
+    <form method="POST" action="{{ url_for('staff.staff_register') }}">
       <div class="form-group">
         <label for="staff_id">Staff ID</label>
         <input type="text" id="staff_id" name="staff_id" required>
@@ -118,7 +118,25 @@
 
       <div class="form-group">
         <label for="contact">Contact Number</label>
-        <input type="tel" id="contact" name="contact" required pattern="[0-9]{10}" maxlength="10">
+        <input type="tel" id="contact" name="contact" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+      </div>      
+
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required
+               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$"
+               title="Minimum 8 characters, at least one uppercase, one lowercase, one number and one special character.">
+      </div>
+      
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
       </div>
 
       <button type="submit" class="btn"><i class="fas fa-user-check"></i> Register</button>
