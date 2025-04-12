@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .dashboard {
+      max-width: 800px;
+      margin: auto;
+      background-color: rgba(255,255,255,0.9);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logout-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #e11d48;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .logout-icon i {
+      margin-right: 6px;
+    }
+
+    .logout-icon:hover {
+      background-color: #b91c1c;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #1e3a8a;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card-btn {
+      background-color: #f1f5ff;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.2s, background-color 0.2s;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .card-btn:hover {
+      transform: translateY(-5px);
+      background-color: #e0ecff;
+    }
+
+    .card-btn i {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #2563eb;
+    }
+
+    .card-btn h3 {
+      margin-bottom: 5px;
+      color: #1e3a8a;
+    }
+
+    .card-btn p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .center-profile {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .center-profile .card-btn {
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <a href="{{url_for('main.home')}}" class="logout-icon"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-user-graduate"></i> Student Dashboard</h1>
+
+    <div class="cards">
+      <button class="card-btn" onclick="location.href='student_hostels.html'">
+        <i class="fas fa-building"></i>
+        <h3>Hostels</h3>
+        <p>Manage your hostel info and room allocation.</p>
+      </button>
+
+      <button class="card-btn" onclick="location.href='student_guesthouses.html'">
+        <i class="fas fa-hotel"></i>
+        <h3>Guesthouses</h3>
+        <p>Book and view guesthouse details.</p>
+      </button>
+
+      <button class="card-btn" onclick="location.href='student_mess.html'">
+        <i class="fas fa-utensils"></i>
+        <h3>Mess</h3>
+        <p>Check mess status and update preferences.</p>
+      </button>
+    </div>
+
+    <!-- Centered Profile Card -->
+    <div class="center-profile">
+      <button class="card-btn" onclick="location.href='student_profile.html'">
+        <i class="fas fa-user-circle"></i>
+        <h3>Profile</h3>
+        <p>View and update your student profile.</p>
+      </button>
+    </div>
+
+  </div>
+</body>
+</html>

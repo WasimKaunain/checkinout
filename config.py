@@ -12,6 +12,6 @@ class Config:
     DB_PASSWORD = quote_plus(os.getenv('DB_PASSWORD'))  # URL-encode the password
     DB_NAME = os.getenv('DB_NAME')
     
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@localhost/{DB_NAME}"
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USERNAME}:{DB_PASSWORD}@10.0.116.125/{DB_NAME}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

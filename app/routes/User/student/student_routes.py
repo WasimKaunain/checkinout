@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from werkzeug.security import generate_password_hash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError, IntegrityError, DataError
 from app.utils.id_generator import generate_custom_user_id
 from app.models import User, Student, db
@@ -13,9 +13,53 @@ student_bp = Blueprint('student', __name__, url_prefix='/student')
 def student_login_register():
     return render_template('User/Student/stud_login_reg.html')
 
-@student_bp.route('/login')
+
+@student_bp.route('/login', methods=['GET', 'POST'])
 def student_login():
+    if request.method == 'POST':
+        username = request.form.get('email')
+        password = request.form.get('password')
+
+        # Fetch user from Users table (assuming you're using User model here)
+        user = User.query.filter_by(username=username).first()
+        if user:
+
+            # Now check if user is linked to a student
+            student = Student.query.filter_by(email=user.username).first()
+            if student:
+                # Now validate password
+                if check_password_hash(user.password_hash, password):
+                    session['user_id'] = user.user_id
+                    session['user_type'] = 'student'
+
+                    flash('Login successful!', 'success')
+                    return redirect(url_for('student.student_dashboard'))
+                else:
+                    flash('Invalid password', 'danger')
+            else:
+                flash('Not a valid student account', 'warning')
+        else:
+            flash('Invalid username', 'danger')
+
+        return redirect(url_for('student.student_login'))
+
+    # For GET request
+    print("📄 Rendering login page (GET)")
     return render_template('User/Student/stud_login.html')
+
+@student_bp.route('/dashboard', methods=['GET','POST'])
+def student_dashboard():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+    return render_template('User/Student/student_dashboard.html')
+
+@student_bp.route('/logout')
+def student_logout():
+    session.clear()
+    flash("Logged out successfully.", "info")
+    return redirect(url_for('student.student_login'))
+
 
 @student_bp.route('/forget-password')
 def student_forget_password():
@@ -68,7 +112,6 @@ def student_register():
                 mess_id=mess_id
             )
             db.session.add(student)
-
             db.session.commit()
 
             flash('Registration successful!', 'success')

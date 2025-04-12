@@ -98,7 +98,7 @@
   <div class="login-box">
     <i class="fas fa-user-tie"></i>
     <h2>Staff Login</h2>
-    <form action="staff_login.php" method="POST">
+    <form method="POST" action="{{url_for('staff.staff_login')}}">
       <input type="email" name="email" placeholder="Email" required>
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit" class="btn">Login</button>

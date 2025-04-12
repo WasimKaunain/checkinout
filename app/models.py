@@ -58,6 +58,7 @@ class Visitor(db.Model):
     duration_of_stay = db.Column(db.Integer, nullable=False)
     purpose = db.Column(db.String(1000), nullable=False)
     reference = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(30), nullable=False)
 
 class Hostel(db.Model):
     __tablename__ = 'hostels'
