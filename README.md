@@ -32,8 +32,7 @@ CheckInOut is a database-driven management system designed to streamline the che
 ## 🏗️ Installation
 1. Clone the repository:
    ```sh
-   git clone [https://github.com/yWasimKaunain/CheckInOut-Management.git
-   cd CheckInOut-Management](https://github.com/WasimKaunain/checkinout.git)
+   git clone https://github.com/WasimKaunain/checkinout.git
    ```
 2. Set up the database:
    - Ensure MySQL is installed and running.
