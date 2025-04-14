@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Allot/Deallot Hostel Rooms</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dcefff, #eef2ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+      background-color: #ffffffee;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #ef4444;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: grid;
+      gap: 20px;
+    }
+
+    label {
+      font-weight: 600;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 12px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background-color: #1e40af;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-door-open"></i> Allot / Deallot Hostel Rooms</h1>
+
+    <form action="#" method="POST">
+      <label for="student_id">Student ID</label>
+      <input type="text" id="student_id" name="student_id" placeholder="Enter Student ID" required>
+
+      <label for="hostel_name">Hostel Name</label>
+      <select id="hostel_name" name="hostel_name">
+        <option value="A">A Block</option>
+        <option value="B">B Block</option>
+        <option value="C">C Block</option>
+      </select>
+
+      <label for="room_number">Room Number</label>
+      <input type="text" id="room_number" name="room_number" placeholder="Enter Room Number" required>
+
+      <label for="action">Action</label>
+      <select id="action" name="action">
+        <option value="allot">Allot Room</option>
+        <option value="deallot">Deallot Room</option>
+      </select>
+
+      <button type="submit" class="btn">Submit</button>
+    </form>
+
+    <a href="{{url_for('admin.admin_hostels')}}" class="back-btn">← Back to Manage Hostels</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guestroom Availability</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dcefff, #eef2ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: #ffffffee;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logout-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #e11d48;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .logout-icon i {
+      margin-right: 6px;
+    }
+
+    .logout-icon:hover {
+      background-color: #b91c1c;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #e3f0ff;
+      color: #1e3a8a;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f6faff;
+    }
+
+    .available {
+      color: green;
+      font-weight: bold;
+    }
+
+    .occupied {
+      color: red;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{url_for('main.home')}}" class="logout-icon"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-bed"></i> Guestroom Availability</h1>
+
+    <table>
+      <tr>
+        <th>Room No</th>
+        <th>Guesthouse</th>
+        <th>Room Type</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>101</td>
+        <td>Silver Oak</td>
+        <td>Single AC</td>
+        <td class="available">Available</td>
+      </tr>
+      <tr>
+        <td>102</td>
+        <td>Silver Oak</td>
+        <td>Double AC</td>
+        <td class="occupied">Occupied</td>
+      </tr>
+      <tr>
+        <td>203</td>
+        <td>Maple Residency</td>
+        <td>Single Non-AC</td>
+        <td class="available">Available</td>
+      </tr>
+      <tr>
+        <td>204</td>
+        <td>Maple Residency</td>
+        <td>Suite</td>
+        <td class="occupied">Occupied</td>
+      </tr>
+    </table>
+
+    <a href="{{url_for('visitor.visitor_guesthouses')}}" class="back-btn">← Back to Guesthouse Services</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vacancy Update</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dcefff, #eef2ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logout-btn:hover {
+      background-color: #b02a37;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    .back-btn {
+      margin-top: 20px;
+      display: inline-block;
+      background-color: #888;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h2><i class="fas fa-sync-alt"></i> Update Room Vacancy</h2>
+    
+    <form onsubmit="return validateRoomNumber()">
+      <label for="hostel">Hostel Name</label>
+      <select id="hostel" name="hostel" required>
+        <option value="">Select Hostel</option>
+        <option>Maple Hostel</option>
+        <option>Oak Hostel</option>
+        <option>Pine Hostel</option>
+      </select>
+
+      <label for="room">Room Number</label>
+      <input type="text" id="room" name="room" placeholder="e.g. B102" required
+             pattern="^[A-L][0-9]{3}$" title="Must start with A-L followed by 3 digits (e.g., B102)">
+
+      <button type="submit">Mark as Vacant</button>
+    </form>
+
+    <a href="{{url_for('student.student_hostel')}}" class="back-btn">← Back to Room Services</a>
+  </div>
+
+  <script>
+    function validateRoomNumber() {
+      const room = document.getElementById("room").value;
+      const pattern = /^[A-L][0-9]{3}$/;
+
+      if (!pattern.test(room)) {
+        alert("Invalid room number format! Use A-L followed by 3 digits (e.g., B102).");
+        return false;
+      }
+
+      return true;
+    }
+  </script>
+</body>
+</html>

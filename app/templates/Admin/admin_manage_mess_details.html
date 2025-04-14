@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Mess Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dcefff, #eef2ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background-color: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #ef4444;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #e3f0ff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f6faff;
+    }
+
+    .action-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+
+    .edit-btn {
+      background-color: #2563eb;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{ url_for('main.home') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-clipboard-list"></i> Manage All Messes</h1>
+
+    <table>
+      <tr>
+        <th>Mess ID</th>
+        <th>Mess Name</th>
+        <th>Capacity</th>
+        <th>Location</th>
+        <th>Actions</th>
+      </tr>
+      {% for mess in messes %}
+      <tr>
+        <td>{{ mess.mess_id }}</td>
+        <td>{{ mess.name }}</td>
+        <td>{{ mess.capacity }}</td>
+        <td>{{ mess.location }}</td>
+        <td>
+          <button class="action-btn edit-btn" onclick="location.href='{{ url_for('edit_mess', mess_id=mess.mess_id) }}'">Edit</button>
+          <button class="action-btn delete-btn" onclick="location.href='{{ url_for('delete_mess', mess_id=mess.mess_id) }}'">Delete</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <a href="{{url_for('admin.admin_mess')}}" class="back-btn">← Back to Manage Mess</a>
+  </div>
+</body>
+</html>

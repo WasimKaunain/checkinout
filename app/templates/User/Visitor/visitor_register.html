@@ -3,163 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <title>Visitor Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #dbeafe, #bfdbfe);
+      background: linear-gradient(to right, #c2e9fb, #a1c4fd);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      height: 100vh;
-      margin: 0;
-      padding-top: 40px; /* Extra space from top */
+      padding: 60px 20px 20px;
     }
 
-    .form-box {
-      background-color: #fff;
-      padding: 30px 40px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      width: 450px;
-      margin-top: 20px; /* Additional margin from top */
+    .container {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 500px;
     }
 
-    h2 {
-      margin-bottom: 20px;
+    h1 {
       text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
       color: #1e3a8a;
     }
 
+    .form-group {
+      margin-bottom: 20px;
+    }
+
     label {
-      font-weight: 600;
       display: block;
-      margin-top: 10px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
     }
 
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      background-color: #f9f9f9;
+      font-size: 15px;
     }
 
     .btn {
       width: 100%;
       padding: 12px;
       background-color: #2563eb;
-      color: #fff;
+      color: white;
       border: none;
       border-radius: 10px;
-      margin-top: 15px;
       font-size: 16px;
       cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
+      transition: background-color 0.3s;
+      margin-top: 10px;
     }
 
     .btn:hover {
-      background-color: #1d4ed8;
+      background-color: #1e40af;
     }
 
-    .link {
+    .login-link, .back-link {
+      display: block;
       text-align: center;
       margin-top: 15px;
-    }
-
-    .link a {
-      color: #2563eb;
       text-decoration: none;
       font-weight: 500;
     }
 
-    .link a:hover {
+    .login-link {
+      color: #2563eb;
+    }
+
+    .login-link:hover {
       text-decoration: underline;
+    }
+
+    .back-link {
+      background-color: #6b7280;
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    .back-link:hover {
+      background-color: #4b5563;
     }
   </style>
 </head>
 <body>
-  <div class="form-box">
-    <h1><i class="fas fa-user-graduate"></i> Visitor Registration</h1>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
+  <div class="container">
+    <h1><i class="fas fa-user-plus"></i> Visitor Registration</h1>
     <form method="POST" action="{{ url_for('visitor.visitor_register') }}">
+      <div class="form-group">
+        <label for="visitor_id">Visitor ID</label>
+        <input type="text" name="visitor_id" id="visitor_id" required>
+      </div>
 
-      <label for="visitor_id">Visitor ID</label>
-      <input type="text" name="visitor_id" id="visitor_id" required>
-
-      <label for="visitor_name">Visitor Name</label>
-      <input type="text" name="visitor_name" id="visitor_name" required>
+      <div class="form-group">
+        <label for="visitor_name">Visitor Name</label>
+        <input type="text" name="visitor_name" id="visitor_name" required>
+      </div>
 
       <div class="form-group">
         <label for="gender">Gender</label>
         <select name="gender" id="gender" required>
-        <option value="">-- Select Gender --</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
+          <option value="">-- Select Gender --</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
         </select>
       </div>
 
       <div class="form-group">
         <label for="contact">Contact Number</label>
         <input type="tel" id="contact" name="contact" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-      </div> 
+      </div>
 
-      <label for="email">Email</label>
-      <input type="email" name="email" id="email" required>
-     
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+      </div>
 
-      <label for="room_number">Room Number</label>
-      <input type="text" name="room_number" id="room_number" required>
+      <div class="form-group">
+        <label for="room_number">Room Number</label>
+        <input type="text" name="room_number" id="room_number" required>
+      </div>
 
-      <label for="guesthouse_name">Guesthouse Name</label>
-      <input type="text" name="guesthouse_name" id="guesthouse_name" required>
+      <div class="form-group">
+        <label for="guesthouse_name">Guesthouse Name</label>
+        <input type="text" name="guesthouse_name" id="guesthouse_name" required>
+      </div>
 
-      <label for="duration">Duration of Stay (in days)</label>
-      <input type="number" name="duration" id="duration" min="1" required>
+      <div class="form-group">
+        <label for="duration">Duration of Stay (in days)</label>
+        <input type="number" name="duration" id="duration" min="1" required>
+      </div>
+      <div class="form-group">
+        <label for="purpose">Purpose of Visit</label>
+        <input type="text" name="purpose" id="purpose" required>
+      </div>
 
-      <label for="purpose">Purpose of Visit</label>
-      <input type="text" name="purpose" id="purpose" required>
+      <div class="form-group">
+        <label for="reference">Reference</label>
+        <input type="text" name="reference" id="reference" required>
+      </div>
 
-      <label for="reference">Reference</label>
-      <input type="text" name="reference" id="reference" required>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required 
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$"
+          title="Must contain at least 8 characters, including uppercase, lowercase, number, and special character.">
+      </div>
 
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" required 
-            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$"
-            title="Must contain at least 8 characters, including uppercase, lowercase, number, and special character.">
-
-      <label for="confirm_password">Confirm Password</label>
-      <input type="password" name="confirm_password" id="confirm_password" required>
-
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
+      </div>
 
       <button type="submit" class="btn">Register</button>
     </form>
 
-    <div class="link">
-      <a href="{{url_for('visitor.visitor_login')}}" class = "login-link">Already have an account? Login</a>
-    </div>
-    <a href= "{{url_for('visitor.visitor_login_register')}}" class="btn">← Back to Visitor Page</a>
+    <a href="{{url_for('visitor.visitor_login')}}" class="login-link">Already have an account? Login</a>
+    <a href="{{url_for('visitor.visitor_login_register')}}" class="back-link">← Back to Visitor Page</a>
   </div>
-  <script>
-    // Auto-hide flash messages after 4 seconds
-    setTimeout(function () {
-      const flashContainer = document.getElementById('flash-messages');
-      if (flashContainer) {
-        flashContainer.style.display = 'none';
-      }
-    }, 4000); // 4000ms = 4 seconds
-  </script>
 </body>
 </html>

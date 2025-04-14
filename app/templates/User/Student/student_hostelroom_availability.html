@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Room Availability</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dcefff, #eef2ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #ffffffee;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logout-btn:hover {
+      background-color: #b02a37;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #1e3a8a;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    .result-box {
+      margin-top: 25px;
+      background-color: #f6faff;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 5px solid #2563eb;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-search"></i> Check Room Availability</h1>
+
+    <form id="availability-form">
+      <div>
+        <label for="hostel">Hostel Name</label>
+        <select name="hostel" id="hostel" required>
+          <option value="">-- Select Hostel --</option>
+          <option value="Silver Oak">Silver Oak</option>
+          <option value="Maple Residency">Maple Residency</option>
+          <option value="Pine Hall">Pine Hall</option>
+          <!-- Add more as needed -->
+        </select>
+      </div>
+
+      <div>
+        <label for="room">Room Number</label>
+        <input type="text" name="room" id="room" placeholder="e.g. B102" required
+               pattern="^[A-L][0-9]{3}$" title="Format must be one letter A–L followed by 3 digits (e.g., A102)">
+      </div>
+
+      <button type="submit"><i class="fas fa-search"></i> Search</button>
+    </form>
+
+    <div class="result-box" id="room-result" style="display:none;">
+      <strong>Status:</strong> <span id="room-status">Available</span><br>
+      <strong>Room Type:</strong> <span id="room-type">Single AC</span><br>
+      <strong>Guesthouse:</strong> <span id="room-guesthouse">Silver Oak</span>
+    </div>
+
+    <a href="{{url_for('student.student_hostel')}}" class="back-btn">← Back to Room Services</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('availability-form');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const roomInput = document.getElementById('room');
+      const pattern = /^[A-L][0-9]{3}$/;
+
+      if (!pattern.test(roomInput.value)) {
+        alert("Room number format invalid. Use format A-L followed by 3 digits (e.g., B102).");
+        roomInput.focus();
+        return false;
+      }
+
+      // Simulated result
+      document.getElementById('room-status').innerText = 'Available';
+      document.getElementById('room-type').innerText = 'Single AC';
+      document.getElementById('room-guesthouse').innerText = document.getElementById('hostel').value;
+      document.getElementById('room-result').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

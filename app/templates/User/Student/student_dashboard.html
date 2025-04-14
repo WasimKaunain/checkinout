@@ -56,6 +56,24 @@
     }
 
     .card-btn {
+      display: block;
+      padding: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none; /* 🔥 removes underline */
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .card-btn h3,
+    .card-btn p {
+      margin: 0.5rem 0;
+      color: white; /* Optional: Ensure text is visible on button bg */
+      text-decoration: none; /* 🔥 extra safety */
+    }
+
+
+    .card-btn {
       background-color: #f1f5ff;
       padding: 20px;
       border-radius: 12px;
@@ -106,33 +124,36 @@
     <h1><i class="fas fa-user-graduate"></i> Student Dashboard</h1>
 
     <div class="cards">
-      <button class="card-btn" onclick="location.href='student_hostels.html'">
+      <a href="{{ url_for('student.student_hostel') }}" class="card-btn">
         <i class="fas fa-building"></i>
         <h3>Hostels</h3>
         <p>Manage your hostel info and room allocation.</p>
+      </a>
       </button>
 
-      <button class="card-btn" onclick="location.href='student_guesthouses.html'">
+      <a href="{{ url_for('student.student_guesthouses') }}" class="card-btn">
         <i class="fas fa-hotel"></i>
         <h3>Guesthouses</h3>
         <p>Book and view guesthouse details.</p>
+      </a>
       </button>
 
-      <button class="card-btn" onclick="location.href='student_mess.html'">
+      <a href="{{ url_for('student.student_mess') }}" class="card-btn">
         <i class="fas fa-utensils"></i>
         <h3>Mess</h3>
         <p>Check mess status and update preferences.</p>
       </button>
+      </a>
     </div>
 
-    <!-- Centered Profile Card -->
-    <div class="center-profile">
-      <button class="card-btn" onclick="location.href='student_profile.html'">
-        <i class="fas fa-user-circle"></i>
-        <h3>Profile</h3>
-        <p>View and update your student profile.</p>
-      </button>
-    </div>
+<!-- Centered Profile Card -->
+<div class="center-profile">
+  <a href="{{ url_for('student.student_profile') }}" class="card-btn">
+    <i class="fas fa-user-circle"></i>
+    <h3>Profile</h3>
+    <p>View and update your student profile.</p>
+  </a>
+</div>
 
   </div>
 </body>

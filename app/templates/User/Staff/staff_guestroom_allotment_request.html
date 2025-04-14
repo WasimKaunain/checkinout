@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guestroom Allotment Request</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #dc3545;
+      color: white;
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background-color: #b02a37;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 15px;
+      display: block;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .btn {
+      margin-top: 25px;
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #1e40af;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+
+    .section-title {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #2563eb;
+    }
+
+    .room-info {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f1f5ff;
+      border-radius: 10px;
+    }
+
+    .room-info h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #1e3a8a;
+    }
+
+    .room-info p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-envelope-open-text"></i> Guestroom Allotment Request</h1>
+
+    <!-- Allotment Form -->
+    <form action="submit_guestroom_request.php" method="POST">
+      <label for="visitor_name">Name</label>
+      <input type="text" id="visitor_name" name="visitor_name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="contact">Contact Number</label>
+      <input type="tel" id="contact" name="contact" pattern="[0-9]{10}" maxlength="10" required>
+
+      <label for="guesthouse">Guesthouse</label>
+      <select id="guesthouse" name="guesthouse" required>
+        <option value="">-- Select Guesthouse --</option>
+        <option value="Silver Oak">Silver Oak</option>
+        <option value="Maple Residency">Maple Residency</option>
+      </select>
+
+      <label for="room_type">Room Type</label>
+      <select id="room_type" name="room_type" required>
+        <option value="">-- Select Room Type --</option>
+        <option value="Single AC">Single AC</option>
+        <option value="Double AC">Double AC</option>
+        <option value="Single Non-AC">Single Non-AC</option>
+        <option value="Suite">Suite</option>
+      </select>
+
+      <label for="checkin_date">Check-in Date</label>
+      <input type="date" id="checkin_date" name="checkin_date" required>
+
+      <label for="checkout_date">Check-out Date</label>
+      <input type="date" id="checkout_date" name="checkout_date" required>
+
+      <label for="purpose">Purpose of Visit</label>
+      <textarea id="purpose" name="purpose" rows="3" placeholder="e.g., Conference, Meeting, Family visit..." required></textarea>
+
+      <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Submit Request</button>
+    </form>
+
+    <!-- Room Availability Preview Section -->
+    <div class="section-title"><i class="fas fa-bed"></i> Sample Room Availability</div>
+
+    <div class="room-info">
+      <h4>Room 101 - Silver Oak</h4>
+      <p>Type: Single AC | Status: <span style="color: green;">Available</span></p>
+    </div>
+
+    <div class="room-info">
+      <h4>Room 204 - Maple Residency</h4>
+      <p>Type: Suite | Status: <span style="color: red;">Occupied</span></p>
+    </div>
+
+    <a href="{{url_for('staff.staff_guesthouses')}}" class="back-btn">← Back to Guesthouse</a>
+  </div>
+</body>
+</html>

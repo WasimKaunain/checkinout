@@ -98,8 +98,8 @@
   <div class="login-box">
     <i class="fas fa-user-shield"></i>
     <h2>Admin Login</h2>
-    <form action="admin_login.php" method="POST">
-      <input type="text" name="username" placeholder="Username" required>
+    <form action="{{url_for('admin.admin_login')}}" method="POST">
+      <input type="email" name="email" placeholder="Username" required>
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit" class="btn">Login</button>
     </form>

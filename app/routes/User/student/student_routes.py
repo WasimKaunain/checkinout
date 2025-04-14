@@ -2,7 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError, IntegrityError, DataError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import User, Student, db
+from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, db
+import hashlib, secrets
+from datetime import datetime, timedelta
+import qrcode, io, base64
 import re
 
 #from flask_sqlalchemy import SQLAlchemy
@@ -53,6 +56,7 @@ def student_dashboard():
         flash('Please log in as student first.', 'warning')
         return redirect(url_for('student.student_login'))
     return render_template('User/Student/student_dashboard.html')
+
 
 @student_bp.route('/logout')
 def student_logout():
@@ -112,6 +116,24 @@ def student_register():
                 mess_id=mess_id
             )
             db.session.add(student)
+
+            # Commit first to ensure data is valid before inserting into the other DB
+            db.session.commit()
+
+            # Now insert into Member (cs432cims DB using bind 'eval')
+            member = Member(UserName=custom_user_id, emailID=email)
+            db.session.add(member)
+            db.session.commit()
+
+            # Get the auto-incremented member.id
+            member_id = member.ID
+            login = Login(MemberID=member_id, Password=hashed_password, Role='Student')
+            db.session.add(login)
+            db.session.commit()
+
+            # Insert into MemberGroupMapping with group_id = 5
+            mapping = MemberGroupMapping(MemberID=member_id, GroupID=5)
+            db.session.add(mapping)
             db.session.commit()
 
             flash('Registration successful!', 'success')
@@ -136,3 +158,254 @@ def student_register():
             return redirect(url_for('student.student_register'))
 
     return render_template('User/Student/stud_register.html')
+
+@student_bp.route('/profile')
+def student_profile():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_profile.html', student=student)
+
+@student_bp.route('/hostels')
+def student_hostel():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+    
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    # Get student using the user's email/username
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_hostels.html', student=student)
+
+
+@student_bp.route('/hostelroom-availability')
+def student_hostelroom_availability():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_hostelroom_availability.html', student=student)
+
+@student_bp.route('/hostelroom-vacancy-update')
+def student_hostelroom_vacancy_update():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_hostelroom_vacancy_update.html', student=student)
+
+@student_bp.route('/hostelroom-allotment-details')
+def student_hostelroom_allotment_details():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_hostelroom_allotment_details.html', student=student)
+
+@student_bp.route('/checkin-history')
+def student_checkin_history():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_checkin_history.html', student=student)
+
+
+@student_bp.route('/guesthouses')
+def student_guesthouses():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_guesthouses.html', student=student)
+
+@student_bp.route('/guestroom-availability')
+def student_guestroom_availability():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_guestroom_availability.html', student=student)
+
+@student_bp.route('/guestroom-allotment-request')
+def student_guestroom_allotment_request():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_guestroom_allotment_request.html', student=student)
+
+
+@student_bp.route('/mess')
+def student_mess():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_mess.html', student=student)
+
+
+@student_bp.route('/mess-checkin-history')
+def student_mess_checkin_history():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    return render_template('User/Student/student_mess_checkin_history.html', student=student)
+
+@student_bp.route('/mess-allotment-details')
+def student_mess_allotment_details():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+    
+    mess = Mess.query.filter_by(mess_id=student.mess_id).first()
+    print(mess)
+    # Combine student info for QR content
+    qr_data = f"StudentID: {student.roll_no}\nName: {student.name}\nEmail: {student.email}\nMess: {mess.mess_name}"
+
+    # Generate QR code
+    qr_img = qrcode.make(qr_data)
+    buffer = io.BytesIO()
+    qr_img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    return render_template('User/Student/student_mess_allotment_details.html', mess=mess, qr_code=qr_base64)
+
+
+
+
+
+

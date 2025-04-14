@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import db, User, Visitor, Student, Staff
+from app.models import db, User, Visitor, Student, Staff, Member ,MemberGroupMapping, Login
 import re
 
 visitor_bp = Blueprint('visitor', __name__, url_prefix='/visitor')
@@ -61,9 +61,7 @@ def visitor_logout():
 
 @visitor_bp.route('/register', methods=['GET', 'POST'])
 def visitor_register():
-    print("🛠️ Entered visitor_register route")
     if request.method == 'POST':
-        print("📤 Received POST request")
         visitor_id = request.form['visitor_id']
         name = request.form['visitor_name']
         gender = request.form['gender']
@@ -76,8 +74,6 @@ def visitor_register():
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-
-        print(f"📋 Data: {name}, {visitor_id}, {email}, {password}, {confirm_password}")
 
         # Password match check
         if password != confirm_password:
@@ -94,18 +90,14 @@ def visitor_register():
         student_ref = Student.query.filter_by(roll_no=reference).first()
         staff_ref = Staff.query.filter_by(staff_id=reference).first()
 
-        print(f"Student : {student_ref}, Staff : {staff_ref}")
-
         if not student_ref and not staff_ref:
             flash('Invalid reference. It must match a registered Student Roll No or Staff ID.', 'danger')
             return redirect(url_for('visitor.visitor_register'))
 
         hashed_password = generate_password_hash(password)
-        print(f"Password hashed...")
 
         try:
             custom_user_id = generate_custom_user_id('Visitor')
-            print("Custom id created...")
             # Save to User table
             user = User(user_id = custom_user_id, username=email, password_hash=hashed_password, role='Visitor')
             db.session.add(user)
@@ -126,9 +118,24 @@ def visitor_register():
             )
             db.session.add(visitor)
 
-            print("before commit...")
+            # Commit first to ensure data is valid before inserting into the other DB
             db.session.commit()
-            print("after commit...")
+
+            # Now insert into Member (cs432cims DB using bind 'eval')
+            member = Member(UserName=custom_user_id, emailID=email)
+            db.session.add(member)
+            db.session.commit()
+
+            # Get the auto-incremented member.id
+            member_id = member.ID
+            login = Login(MemberID=member_id, Password=hashed_password, Role='Visitor')
+            db.session.add(login)
+            db.session.commit()
+
+            # Insert into MemberGroupMapping with group_id = 5
+            mapping = MemberGroupMapping(MemberID=member_id, GroupID=5)
+            db.session.add(mapping)
+            db.session.commit()
 
             flash('Visitor registered successfully!', 'success')
             return redirect(url_for('visitor.visitor_login'))
@@ -161,3 +168,82 @@ def visitor_register():
             return redirect(url_for('visitor.visitor_register'))
 
     return render_template('User/Visitor/visitor_register.html')
+
+@visitor_bp.route('/profile')
+def visitor_profile():
+    if 'user_id' not in session or session.get('user_type') != 'visitor':
+        flash('Please log in as a visitor first.', 'warning')
+        return redirect(url_for('visitor.visitor_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('visitor.visitor_login'))
+
+    visitor = Visitor.query.filter_by(email=user.username).first()
+    if not visitor:
+        flash('visitor profile not found.', 'danger')
+        return redirect(url_for('visitor.visitor_dashboard'))
+
+    return render_template('User/visitor/visitor_profile.html', visitor=visitor)
+
+@visitor_bp.route('/guesthouses')
+def visitor_guesthouses():
+    if 'user_id' not in session or session.get('user_type') != 'visitor':
+        flash('Please log in as a visitor first.', 'warning')
+        return redirect(url_for('visitor.visitor_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('visitor.visitor_login'))
+
+    visitor = Visitor.query.filter_by(email=user.username).first()
+    if not visitor:
+        flash('visitor profile not found.', 'danger')
+        return redirect(url_for('visitor.visitor_dashboard'))
+
+    return render_template('User/visitor/visitor_guesthouses.html', visitor=visitor)
+
+
+@visitor_bp.route('/guestroom-availability')
+def visitor_guestroom_availability():
+    if 'user_id' not in session or session.get('user_type') != 'visitor':
+        flash('Please log in as a visitor first.', 'warning')
+        return redirect(url_for('visitor.visitor_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('visitor.visitor_login'))
+
+    visitor = Visitor.query.filter_by(email=user.username).first()
+    if not visitor:
+        flash('visitor profile not found.', 'danger')
+        return redirect(url_for('visitor.visitor_dashboard'))
+
+    return render_template('User/visitor/visitor_guestroom_availability.html', visitor=visitor)
+
+@visitor_bp.route('/id-card-generation')
+def visitor_id_card_generation():
+    if 'user_id' not in session or session.get('user_type') != 'visitor':
+        flash('Please log in as a visitor first.', 'warning')
+        return redirect(url_for('visitor.visitor_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('visitor.visitor_login'))
+
+    visitor = Visitor.query.filter_by(email=user.username).first()
+    if not visitor:
+        flash('visitor profile not found.', 'danger')
+        return redirect(url_for('visitor.visitor_dashboard'))
+
+    return render_template('User/visitor/visitor_id_card_generation.html', visitor=visitor)
+
+

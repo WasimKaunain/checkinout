@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visitor Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7ff, #d0e7ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .profile-container {
+      max-width: 700px;
+      margin: auto;
+      background-color: #ffffffdd;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 25px;
+    }
+
+    .profile-card {
+      background-color: #f1f5ff;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .profile-item {
+      margin-bottom: 15px;
+    }
+
+    .profile-item label {
+      font-weight: 600;
+      display: block;
+      color: #2563eb;
+      margin-bottom: 5px;
+    }
+
+    .profile-item p {
+      margin: 0;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .edit-btn {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 10px 20px;
+      background-color: #2563eb;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .edit-btn:hover {
+      background-color: #1e40af;
+    }
+
+    .delete-btn {
+      display: inline-block;
+      margin-top: 25px;
+      margin-left: 10px;
+      padding: 10px 20px;
+      background-color: #dc3545;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .delete-btn:hover {
+      background-color: #b02a37;
+    }
+
+    .qr-box {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .qr-placeholder {
+      display: inline-block;
+      background-color: #f0f0f0;
+      border: 2px dashed #2563eb;
+      padding: 40px;
+      border-radius: 10px;
+      color: #999;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-container">
+    <!-- Logout Button -->
+    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <!-- Profile Content -->
+    <h1><i class="fas fa-user-circle"></i> Visitor Profile</h1>
+
+    <div class="profile-card">
+      <div class="profile-item">
+        <label>Name</label>
+        <p>{{ visitor.name }}</p>
+      </div>
+
+      <div class="profile-item">
+        <label>Email</label>
+        <p>{{ visitor.email }}</p>
+      </div>
+
+      <div class="profile-item">
+        <label>Gender</label>
+        <p>{{ visitor.gender }}</p>
+      </div>
+
+      <div class="profile-item">
+        <label>Contact</label>
+        <p>{{ visitor.contact }}</p>
+      </div>
+
+      <div class="profile-item">
+        <label>Visitor ID</label>
+        <p>{{ visitor.visitor_id }}</p>
+      </div>
+
+      <a href="profile_update.html" class="edit-btn"><i class="fas fa-pen"></i> Edit Profile</a>
+      <a href="profile_delete.html" class="delete-btn" onclick="return confirm('Are you sure you want to delete your profile? This cannot be undone.')"><i class="fas fa-trash-alt"></i> Delete Profile</a>
+
+      <!-- QR Code Section -->
+      <div class="qr-box">
+        <h3><i class="fas fa-qrcode"></i> Your QR Code</h3>
+        <div class="qr-placeholder">
+          QR Code Placeholder<br>
+          (Dynamically generated)
+        </div>
+      </div>
+
+      <a href="{{url_for('visitor.visitor_dashboard')}}" class="back-btn">← Back to Dashboard</a>
+    </div>
+  </div>
+
+</body>
+</html>

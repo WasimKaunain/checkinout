@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mess Allotment Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7ff, #d0e7ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background-color: #ffffffee;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 35px;
+      color: #1e3a8a;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #a8bfe185;
+      border-radius: 12px;
+      padding: 20px 25px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .detail-row:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .detail-label {
+      font-weight: 600;
+      font-size: 32px;
+      color: #2563eb;
+      flex: 1;
+    }
+
+    .detail-value {
+      flex: 2;
+      font-size: 18px;
+      color: #333;
+      margin-top: 4px;
+    }
+
+    .detail-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .qr-box {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .qr-placeholder {
+      display: inline-block;
+      background-color: #f9f9f9;
+      border: 2px dashed #2563eb;
+      padding: 50px;
+      border-radius: 12px;
+      color: #999;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .qr-placeholder:hover {
+      background-color: #eef3ff;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 40px;
+      background-color: #6b7280;
+      color: white;
+      padding: 12px 24px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #4b5563;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1><i class="fas fa-utensils"></i> Mess Allotment Details</h1>
+
+    <div class="card">
+      <div class="detail-row">
+        <div class="detail-text">
+          <label class="detail-label">Mess ID</label>
+          <p class="detail-value">{{ mess.mess_id }}</p>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-text">
+          <label class="detail-label">Mess Name</label>
+          <p class="detail-value">{{ mess.mess_name }}</p>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-text">
+          <label class="detail-label">Capacity</label>
+          <p class="detail-value">{{ mess.capacity }}</p>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-text">
+          <label class="detail-label">Location</label>
+          <p class="detail-value">{{ mess.location }}</p>
+        </div>
+      </div>
+
+      <div class="qr-box">
+        <h3><i class="fas fa-qrcode"></i> Your QR Code</h3>
+        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" style="max-width: 200px; border: 4px solid #2563eb; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; background: #fff;">
+      </div>
+
+      <div style="text-align: center;">
+        <a href="{{ url_for('student.student_mess') }}" class="back-btn">← Back to Mess Services</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

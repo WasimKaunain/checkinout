@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import db, User, Staff
+from app.models import db, User, Staff, Member ,MemberGroupMapping, Login
 import re
 
 staff_bp = Blueprint('staff', __name__, url_prefix='/staff')
@@ -102,6 +102,25 @@ def staff_register():
                 contact_no=contact_no
             )
             db.session.add(staff)
+
+            # Commit first to ensure data is valid before inserting into the other DB
+            db.session.commit()
+
+            # Now insert into Member (cs432cims DB using bind 'eval')
+            member = Member(UserName=custom_user_id, emailID=email)
+            db.session.add(member)
+            db.session.commit()
+
+            # Get the auto-incremented member.id
+            member_id = member.ID
+            login = Login(MemberID=member_id, Password=hashed_password, Role='Staff')
+            db.session.add(login)
+            db.session.commit()
+
+            # Insert into MemberGroupMapping with group_id = 5
+            mapping = MemberGroupMapping(MemberID=member_id, GroupID=5)
+            db.session.add(mapping)
+
             db.session.commit()
         
             flash("Staff registered successfully!", "success")
@@ -128,3 +147,81 @@ def staff_register():
             flash(error_msg, "danger")
 
     return render_template('User/Staff/staff_register.html')
+
+@staff_bp.route('/profile')
+def staff_profile():
+    if 'user_id' not in session or session.get('user_type') != 'staff':
+        flash('Please log in as a staff first.', 'warning')
+        return redirect(url_for('staff.staff_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('staff.staff_login'))
+
+    staff = Staff.query.filter_by(email=user.username).first()
+    if not staff:
+        flash('Staff profile not found.', 'danger')
+        return redirect(url_for('staff.staff_dashboard'))
+
+    return render_template('User/Staff/staff_profile.html', staff=staff, user=user)
+
+@staff_bp.route('/guesthouses')
+def staff_guesthouses():
+    if 'user_id' not in session or session.get('user_type') != 'staff':
+        flash('Please log in as a staff first.', 'warning')
+        return redirect(url_for('staff.staff_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('staff.staff_login'))
+
+    staff = Staff.query.filter_by(email=user.username).first()
+    if not staff:
+        flash('Staff profile not found.', 'danger')
+        return redirect(url_for('staff.staff_dashboard'))
+
+    return render_template('User/Staff/staff_guesthouses.html', staff=staff)
+
+@staff_bp.route('/guestroom-availability')
+def staff_guestroom_availability():
+    if 'user_id' not in session or session.get('user_type') != 'staff':
+        flash('Please log in as a staff first.', 'warning')
+        return redirect(url_for('staff.staff_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('staff.staff_login'))
+
+    staff = Staff.query.filter_by(email=user.username).first()
+    if not staff:
+        flash('Staff profile not found.', 'danger')
+        return redirect(url_for('staff.staff_dashboard'))
+
+    return render_template('User/Staff/staff_guestroom_availability.html', staff=staff)
+
+@staff_bp.route('/guestroom-allotment-request')
+def staff_guestroom_allotment_request():
+    if 'user_id' not in session or session.get('user_type') != 'staff':
+        flash('Please log in as a staff first.', 'warning')
+        return redirect(url_for('staff.staff_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('staff.staff_login'))
+
+    staff = Staff.query.filter_by(email=user.username).first()
+    if not staff:
+        flash('Staff profile not found.', 'danger')
+        return redirect(url_for('staff.staff_dashboard'))
+
+    return render_template('User/Staff/staff_guestroom_allotment_request.html', staff=staff)
+
+

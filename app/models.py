@@ -3,6 +3,37 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
+class Member(db.Model):
+    __bind_key__ = 'cims'
+    __tablename__ = 'members'
+    ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    UserName = db.Column(db.String(255), nullable=False)
+    emailID = db.Column(db.String(255), nullable=True)
+    DoB = db.Column(db.Date, nullable=True)
+
+class Login(db.Model):
+    __bind_key__ = 'cims'
+    __tablename__ = 'Login'
+    MemberID = db.Column(db.String(50), db.ForeignKey('members.ID'), primary_key=True)
+    Password = db.Column(db.String(200), nullable=False)
+    Session = db.Column(db.String(500), nullable=True)
+    Expiry = db.Column(db.Integer, nullable=True)
+    Role =db.Column(db.String(10), nullable = False)
+
+class Images(db.Model):
+    __bind_key__ = 'cims'
+    __tablename__ = 'images'
+    MemberID = db.Column(db.Integer, db.ForeignKey('members.ID'), primary_key=True)
+    ImagePath = db.Column(db.String(500), nullable=True)
+
+
+class MemberGroupMapping(db.Model):
+    __bind_key__ = 'cims'
+    __tablename__ = 'MemberGroupMapping'
+    MemberID = db.Column(db.Integer, db.ForeignKey('members.ID'), primary_key=True)
+    GroupID = db.Column(db.Integer, nullable=False)
+
+
 class UserIDCounter(db.Model):
     __tablename__ = 'user_id_counters'
 
@@ -15,7 +46,7 @@ class User(db.Model, UserMixin):
     user_id = db.Column(db.String(10), primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.Enum('Student', 'Visitor', 'Staff'), nullable=False)
+    role = db.Column(db.Enum('Student', 'Visitor', 'Staff', 'Admin'), nullable=False)
     created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
 
 class Student(db.Model):

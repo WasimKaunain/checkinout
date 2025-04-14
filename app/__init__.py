@@ -3,6 +3,7 @@ from app.routes import register_routes
 from app.models import db #import db objects
 from config import Config  # import the Config class
 
+
 def create_app():
     app = Flask(__name__)
 

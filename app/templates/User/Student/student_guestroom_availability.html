@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Check Guestroom Availability</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #dcefff, #eef2ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: #ffffffee;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #dc3545;
+      color: white;
+      padding: 8px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background-color: #b02a37;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    .filter-section {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    select {
+      flex: 1;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #e3f0ff;
+      color: #1e3a8a;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f6faff;
+    }
+
+    .available {
+      color: green;
+      font-weight: bold;
+    }
+
+    .occupied {
+      color: red;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-bed"></i> Check Guestroom Availability</h1>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <select>
+        <option value="">All Guesthouses</option>
+        <option value="Silver Oak">Silver Oak</option>
+        <option value="Maple Residency">Maple Residency</option>
+      </select>
+      <select>
+        <option value="">All Room Types</option>
+        <option value="Single AC">Single AC</option>
+        <option value="Double AC">Double AC</option>
+        <option value="Single Non-AC">Single Non-AC</option>
+        <option value="Suite">Suite</option>
+      </select>
+      <select>
+        <option value="">All Statuses</option>
+        <option value="available">Available</option>
+        <option value="occupied">Occupied</option>
+      </select>
+    </div>
+
+    <!-- Room Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Room No</th>
+          <th>Guesthouse</th>
+          <th>Room Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>101</td>
+          <td>Silver Oak</td>
+          <td>Single AC</td>
+          <td class="available">Available</td>
+        </tr>
+        <tr>
+          <td>102</td>
+          <td>Silver Oak</td>
+          <td>Double AC</td>
+          <td class="occupied">Occupied</td>
+        </tr>
+        <tr>
+          <td>203</td>
+          <td>Maple Residency</td>
+          <td>Single Non-AC</td>
+          <td class="available">Available</td>
+        </tr>
+        <tr>
+          <td>204</td>
+          <td>Maple Residency</td>
+          <td>Suite</td>
+          <td class="occupied">Occupied</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <a href="{{url_for('student.student_guesthouses')}}" class="back-btn">← Back to Guesthouse Services</a>
+  </div>
+</body>
+</html>

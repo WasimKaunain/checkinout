@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Allotment Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f2fe, #f0f5ff);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+      background-color: #ffffffee;
+      padding: 35px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .logout-btn:hover {
+      background-color: #b02a37;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 35px;
+      color: #1e3a8a;
+    }
+
+    .info-card {
+      background-color: #f1f5ff;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-item {
+      margin-bottom: 15px;
+    }
+
+    .info-item strong {
+      color: #1e40af;
+    }
+
+    .roommates-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .roommates-table th,
+    .roommates-table td {
+      border: 1px solid #cbd5e1;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .roommates-table th {
+      background-color: #c7d2fe;
+      color: #1e3a8a;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 25px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="{{ url_for('main.home') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-info-circle"></i> Allotment Details</h1>
+
+    <div class="info-card">
+      <div class="info-item">
+        {{ name }}
+      </div>
+      <div class="info-item">
+        {{ hostel_name }}
+      </div>
+      <div class="info-item">
+        {{ room_number }}
+      </div>
+      <div class="info-item">
+        <strong>Roommates:</strong>
+        <table class="roommates-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Roll Number</th>
+              <th>Branch</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rm in roommates %}
+              <tr>
+                <td>{{ rm.name }}</td>
+                <td>{{ rm.roll }}</td>
+                <td>{{ rm.branch }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <a href="{{ url_for('student.student_hostel') }}" class="back-btn">← Back to Room Services</a>
+  </div>
+</body>
+</html>
