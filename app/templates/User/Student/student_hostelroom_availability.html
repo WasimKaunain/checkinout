@@ -112,11 +112,7 @@
       <div>
         <label for="hostel">Hostel Name</label>
         <select name="hostel" id="hostel" required>
-          <option value="">-- Select Hostel --</option>
-          <option value="Silver Oak">Silver Oak</option>
-          <option value="Maple Residency">Maple Residency</option>
-          <option value="Pine Hall">Pine Hall</option>
-          <!-- Add more as needed -->
+          <option value="">-- Loading Hostels --</option>
         </select>
       </div>
 
@@ -130,34 +126,66 @@
     </form>
 
     <div class="result-box" id="room-result" style="display:none;">
-      <strong>Status:</strong> <span id="room-status">Available</span><br>
-      <strong>Room Type:</strong> <span id="room-type">Single AC</span><br>
-      <strong>Guesthouse:</strong> <span id="room-guesthouse">Silver Oak</span>
+      <strong>Status:</strong> <span id="room-status"></span><br>
+      <strong>Room Type:</strong> <span id="room-type"></span><br>
+      <strong>Hostel:</strong> <span id="room-guesthouse"></span>
     </div>
 
     <a href="{{url_for('student.student_hostel')}}" class="back-btn">← Back to Room Services</a>
   </div>
 
   <script>
-    const form = document.getElementById('availability-form');
+    // Load hostels from backend on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      fetch('/student/get_hostels')
+        .then(res => res.json())
+        .then(data => {
+          const hostelSelect = document.getElementById('hostel');
+          hostelSelect.innerHTML = '<option value="">-- Select Hostel --</option>';
+          data.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            hostelSelect.appendChild(option);
+          });
+        })
+        .catch(() => {
+          alert("Failed to load hostels from server.");
+        });
+    });
 
-    form.addEventListener('submit', (e) => {
+    // Form submission to check room availability
+    document.getElementById('availability-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const roomInput = document.getElementById('room');
-      const pattern = /^[A-L][0-9]{3}$/;
+      const hostel = document.getElementById('hostel').value;
+      const room = document.getElementById('room').value;
 
-      if (!pattern.test(roomInput.value)) {
-        alert("Room number format invalid. Use format A-L followed by 3 digits (e.g., B102).");
-        roomInput.focus();
-        return false;
+      if (!/^[A-L][0-9]{3}$/.test(room)) {
+        alert("Room number format invalid. Use A-L followed by 3 digits (e.g., B102).");
+        return;
       }
 
-      // Simulated result
-      document.getElementById('room-status').innerText = 'Available';
-      document.getElementById('room-type').innerText = 'Single AC';
-      document.getElementById('room-guesthouse').innerText = document.getElementById('hostel').value;
-      document.getElementById('room-result').style.display = 'block';
+      fetch('/student/check_room_status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hostel: hostel, room: room })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          document.getElementById('room-result').style.display = 'none';
+        } else {
+          document.getElementById('room-status').textContent = data.status;
+          document.getElementById('room-type').textContent = `${data.status === 'Vacant' ? 'Available' : 'Occupied'} - Capacity Based`;
+          document.getElementById('room-guesthouse').textContent = hostel;
+          document.getElementById('room-result').style.display = 'block';
+        }
+      })
+      .catch(() => {
+        alert("Failed to check room status.");
+      });
     });
   </script>
 </body>

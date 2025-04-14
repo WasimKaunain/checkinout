@@ -1,14 +1,14 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError, IntegrityError, DataError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, db
+from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, Hostel, HostelRoom, db, Guesthouse, GuestRoom
 import hashlib, secrets
 from datetime import datetime, timedelta
 import qrcode, io, base64
 import re
 
-#from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
 
@@ -219,6 +219,34 @@ def student_hostelroom_availability():
 
     return render_template('User/Student/student_hostelroom_availability.html', student=student)
 
+@student_bp.route('/get_hostels')
+def get_hostels():
+    try:
+        hostels = Hostel.query.with_entities(Hostel.hostel_name).all()
+        hostel_names = [h.hostel_name for h in hostels]
+        return jsonify(hostel_names)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@student_bp.route('/check_room_status', methods=['POST'])
+def check_room_status():
+    data = request.get_json()
+    hostel = data.get('hostel')
+    room_no = data.get('room')
+
+    room = HostelRoom.query.filter_by(hostel_name=hostel, room_no=room_no).first()
+    
+    if not room:
+        return jsonify({'error': 'Room not found'}), 404
+
+    return jsonify({
+        'status': room.status,
+        'room_type': f"{room.capacity}-Sharing",  # Just an assumption!
+        'guesthouse': hostel  # you could customize this if needed
+    })
+
+
 @student_bp.route('/hostelroom-vacancy-update')
 def student_hostelroom_vacancy_update():
     if 'user_id' not in session or session.get('user_type') != 'student':
@@ -314,6 +342,53 @@ def student_guestroom_availability():
         return redirect(url_for('student.student_dashboard'))
 
     return render_template('User/Student/student_guestroom_availability.html', student=student)
+
+
+# API 1: Get all guesthouse names
+@student_bp.route('/api/guesthouses', methods=['GET'])
+def get_guesthouses():
+    guesthouses = Guesthouse.query.all()
+    names = [gh.guesthouse_name for gh in guesthouses]
+    return jsonify({'guesthouses': names})
+
+
+# API 2: Get unique room types (optional, but nice for dropdown)
+@student_bp.route('/api/room-types', methods=['GET'])
+def get_room_types():
+    types = db.session.query(GuestRoom.type).distinct().all()
+    room_types = [t[0] for t in types]
+    return jsonify({'room_types': room_types})
+
+
+# API 3: Get filtered rooms by guesthouse_name, room_type, and status
+@student_bp.route('/api/guestrooms', methods=['GET'])
+def get_guestrooms():
+    guesthouse_name = request.args.get('guesthouse_name')
+    room_type = request.args.get('room_type')
+    status = request.args.get('status')
+
+    query = GuestRoom.query
+
+    if guesthouse_name:
+        query = query.filter_by(guesthouse_name=guesthouse_name)
+    if room_type:
+        query = query.filter_by(type=room_type)
+    if status:
+        query = query.filter_by(status=status)
+
+    rooms = query.all()
+    room_data = [
+        {
+            'room_no': room.room_no,
+            'guesthouse_name': room.guesthouse_name,
+            'capacity': room.capacity,
+            'type': room.type,
+            'status': room.status
+        }
+        for room in rooms
+    ]
+    return jsonify({'rooms': room_data})
+
 
 @student_bp.route('/guestroom-allotment-request')
 def student_guestroom_allotment_request():
