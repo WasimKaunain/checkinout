@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import db, User, Staff, Member ,MemberGroupMapping, Login
+from app.models import db, User, Staff, Member ,MemberGroupMapping, Login, Guesthouse, GuestRoom
 import re
 
 staff_bp = Blueprint('staff', __name__, url_prefix='/staff')
@@ -204,6 +204,50 @@ def staff_guestroom_availability():
         return redirect(url_for('staff.staff_dashboard'))
 
     return render_template('User/Staff/staff_guestroom_availability.html', staff=staff)
+
+# API 1: Get all guesthouse names for staff
+@staff_bp.route('/api/guesthouses', methods=['GET'])
+def get_guesthouses():
+    guesthouses = Guesthouse.query.all()
+    names = [gh.guesthouse_name for gh in guesthouses]
+    return jsonify({'guesthouses': names})
+
+# API 2: Get unique room types for staff (optional)
+@staff_bp.route('/api/room-types', methods=['GET'])
+def get_room_types():
+    types = db.session.query(GuestRoom.type).distinct().all()
+    room_types = [t[0] for t in types]
+    return jsonify({'room_types': room_types})
+
+# API 3: Get filtered rooms by guesthouse_name, room_type, and status for staff
+@staff_bp.route('/api/guestrooms', methods=['GET'])
+def get_guestrooms():
+    guesthouse_name = request.args.get('guesthouse_name')
+    room_type = request.args.get('room_type')
+    status = request.args.get('status')
+
+    query = GuestRoom.query
+
+    if guesthouse_name:
+        query = query.filter_by(guesthouse_name=guesthouse_name)
+    if room_type:
+        query = query.filter_by(type=room_type)
+    if status:
+        query = query.filter_by(status=status)
+
+    rooms = query.all()
+    room_data = [
+        {
+            'room_no': room.room_no,
+            'guesthouse_name': room.guesthouse_name,
+            'capacity': room.capacity,
+            'type': room.type,
+            'status': room.status
+        }
+        for room in rooms
+    ]
+    return jsonify({'rooms': room_data})
+
 
 @staff_bp.route('/guestroom-allotment-request')
 def staff_guestroom_allotment_request():
