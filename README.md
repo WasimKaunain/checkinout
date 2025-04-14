@@ -32,8 +32,7 @@ CheckInOut is a database-driven management system designed to streamline the che
 ## 🏗️ Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yWasimKaunain/CheckInOut-Management.git
-   cd CheckInOut-Management
+   git clone https://github.com/WasimKaunain/checkinout.git
    ```
 2. Set up the database:
    - Ensure MySQL is installed and running.
@@ -45,7 +44,7 @@ CheckInOut is a database-driven management system designed to streamline the che
 ## 📌 Usage
 1. **Run the application** *(Future implementation)*:
    ```sh
-   python app.py  # Starts the backend server
+   python run.py  # Starts the backend server
    ```
 2. **Login/Register** as a Student or Visitor.
 3. **Check available rooms** and request an allotment.
