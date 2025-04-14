@@ -98,6 +98,15 @@
   <div class="login-box">
     <i class="fas fa-user-shield"></i>
     <h2>Admin Login</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <form action="{{url_for('admin.admin_login')}}" method="POST">
       <input type="email" name="email" placeholder="Username" required>
       <input type="password" name="password" placeholder="Password" required>
