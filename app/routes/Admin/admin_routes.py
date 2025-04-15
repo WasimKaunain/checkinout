@@ -4,7 +4,7 @@ import pandas as pd
 from flask import send_file
 from io import BytesIO
 from flask import Blueprint, render_template, request, session, flash, redirect, url_for, jsonify,jsonify
-from app.models import User, db,  MessCheckInOut, Student, Mess,Hostel,HostelRoom,Student
+from app.models import User, db,  MessCheckInOut, Student, Mess,Hostel,HostelRoom,Student, GuestroomRequest
 from werkzeug.security import check_password_hash
 import random
 

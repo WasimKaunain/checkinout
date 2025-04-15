@@ -73,6 +73,8 @@
       margin-top: 10px;
       transition: background-color 0.3s ease, box-shadow 0.3s ease;
       box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn:hover {
@@ -112,6 +114,8 @@
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit" class="btn">Login</button>
     </form>
+
+    <a href="{{url_for('main.home')}}" class="btn">← Back to Staff Page</a>
 
     <a href="{{url_for('staff.staff_forget_password')}}" class="small-link">Forgot Password?</a>
     <a href="{{url_for('staff.staff_register')}}" class="small-link">Don't have an account? Register here</a>
