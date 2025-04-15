@@ -559,7 +559,7 @@ def student_guestroom_availability():
 
 
 # API 1: Get all guesthouse names
-@student_bp.route('/api-guesthouses', methods=['GET'])
+@student_bp.route('/api/guesthouses', methods=['GET'])
 def get_guesthouses():
     guesthouses = Guesthouse.query.all()
     names = [gh.guesthouse_name for gh in guesthouses]
@@ -567,7 +567,7 @@ def get_guesthouses():
 
 
 # API 2: Get unique room types (optional, but nice for dropdown)
-@student_bp.route('/api-room-types', methods=['GET'])
+@student_bp.route('/api/room-types', methods=['GET'])
 def get_room_types():
     types = db.session.query(GuestRoom.type).distinct().all()
     room_types = [t[0] for t in types]
@@ -575,7 +575,7 @@ def get_room_types():
 
 
 # API 3: Get filtered rooms by guesthouse_name, room_type, and status
-@student_bp.route('/api-guestrooms', methods=['GET'])
+@student_bp.route('/api/guestrooms', methods=['GET'])
 def get_guestrooms():
     guesthouse_name = request.args.get('guesthouse_name')
     room_type = request.args.get('room_type')
