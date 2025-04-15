@@ -209,6 +209,90 @@ def visitor_profile():
 
     return render_template('User/Visitor/visitor_profile.html', visitor=visitor, qr_code=qr_base64)
 
+@visitor_bp.route('/profile-update', methods=['GET', 'POST'])
+def visitor_profile_update():
+    if request.method == 'GET':
+        if 'user_id' not in session or session.get('user_type') != 'visitor':
+            flash('Please log in as a student first.', 'warning')
+            return redirect(url_for('visitor.visitor_login'))
+
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('visitor.visitor_login'))
+
+        visitor = Visitor.query.filter_by(email=user.username).first()
+        if not visitor:
+            flash('visitor profile not found.', 'danger')
+            return redirect(url_for('visitor.visitor_dashboard'))
+
+        return render_template('User/Visitor/visitor_profile_update.html', visitor=visitor)
+
+    else:
+        # POST method: update the student's editable fields
+        if 'user_id' not in session or session.get('user_type') != 'visitor':
+            flash('Unauthorized access.', 'danger')
+            return redirect(url_for('visitor.visitor_login'))
+
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('visitor.visitor_login'))
+
+        visitor = Visitor.query.filter_by(email=user.username).first()
+        if not visitor:
+            flash('visitor profile not found.', 'danger')
+            return redirect(url_for('visitor.visitor_dashboard'))
+
+        # Get form data
+        visitor.name = request.form['name']
+        visitor.email = request.form['email']
+        visitor.contact = request.form['contact']
+
+        try:
+            db.session.commit()
+            flash('Profile updated successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating profile.', 'danger')
+            print("Update Error:", e)
+
+        return redirect(url_for('visitor.visitor_profile'))
+    
+
+@visitor_bp.route('/profile-delete')
+def visitor_profile_delete():
+    if 'user_id' not in session or session.get('user_type') != 'visitor':
+        flash('Please log in as a visitor first.', 'warning')
+        return redirect(url_for('visitor.visitor_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('visitor.visitor_login'))
+
+    visitor = Visitor.query.filter_by(email=user.username).first()
+    if not visitor:
+        flash('visitor profile not found.', 'danger')
+        return redirect(url_for('visitor.visitor_dashboard'))
+
+    try:
+        db.session.delete(visitor)
+        db.session.delete(user)
+        db.session.commit()
+        session.clear()
+        flash('Your profile has been deleted successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while deleting your profile.', 'danger')
+        print("Deletion Error:", e)
+
+    return redirect(url_for('visitor.visitor_login'))
+
+
 @visitor_bp.route('/guesthouses')
 def visitor_guesthouses():
     if 'user_id' not in session or session.get('user_type') != 'visitor':

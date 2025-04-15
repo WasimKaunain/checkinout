@@ -165,8 +165,8 @@
         <p>{{ visitor.visitor_id }}</p>
       </div>
 
-      <a href="profile_update.html" class="edit-btn"><i class="fas fa-pen"></i> Edit Profile</a>
-      <a href="profile_delete.html" class="delete-btn" onclick="return confirm('Are you sure you want to delete your profile? This cannot be undone.')"><i class="fas fa-trash-alt"></i> Delete Profile</a>
+      <a href="{{url_for('visitor.visitor_profile_update')}}" class="edit-btn"><i class="fas fa-pen"></i> Edit Profile</a>
+      <a href="{{url_for('visitor.visitor_profile_delete')}}" class="delete-btn" onclick="return confirm('Are you sure you want to delete your profile? This cannot be undone.')"><i class="fas fa-trash-alt"></i> Delete Profile</a>
 
       <!-- QR Code Section -->
       <div class="qr-box">
