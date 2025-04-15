@@ -2,31 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Check Guestroom Availability</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>Guestroom Availability</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #dcefff, #eef2ff);
-      margin: 0;
-      padding: 40px 20px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background-color: #ffffffee;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      position: relative;
-    }
-
-    .logout-btn {
+    .back-btn {
       position: absolute;
       top: 20px;
       right: 30px;
-      background-color: #dc3545;
+      background-color: #381cb8;
       color: white;
       padding: 8px 16px;
       font-size: 14px;
@@ -36,143 +19,126 @@
       cursor: pointer;
     }
 
-    .logout-btn:hover {
-      background-color: #b02a37;
-    }
-
-    h1 {
-      text-align: center;
-      color: #1e3a8a;
-      margin-bottom: 30px;
-    }
-
-    .filter-section {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    select {
-      flex: 1;
-      padding: 10px;
-      font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ccc;
-    }
-
-    th {
-      background-color: #e3f0ff;
-      color: #1e3a8a;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f6faff;
-    }
-
-    .available {
-      color: green;
-      font-weight: bold;
-    }
-
-    .occupied {
-      color: red;
-      font-weight: bold;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin-top: 30px;
-      background-color: #2563eb;
-      color: white;
-      padding: 10px 20px;
-      font-size: 15px;
-      border-radius: 10px;
-      text-decoration: none;
-    }
-
     .back-btn:hover {
-      background-color: #1e40af;
+      background-color: #200def;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-6">
+  <a href="{{url_for('student.student_guesthouses')}}" class="back-btn"><i class="fas fa-sign-out-alt"></i>Back</a>
+  <div class="bg-white shadow-xl rounded-2xl w-full max-w-4xl p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-center text-blue-600">Guestroom Availability Checker</h1>
 
-    <h1><i class="fas fa-bed"></i> Check Guestroom Availability</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label for="guesthouse-select" class="block font-semibold mb-1">Guesthouse</label>
+        <select id="guesthouse-select" class="w-full border p-2 rounded-lg">
+          <option value="">All Guesthouses</option>
+        </select>
+      </div>
 
-    <!-- Filter Section -->
-    <div class="filter-section">
-      <select>
-        <option value="">All Guesthouses</option>
-        <option value="Silver Oak">Silver Oak</option>
-        <option value="Maple Residency">Maple Residency</option>
-      </select>
-      <select>
-        <option value="">All Room Types</option>
-        <option value="Single AC">Single AC</option>
-        <option value="Double AC">Double AC</option>
-        <option value="Single Non-AC">Single Non-AC</option>
-        <option value="Suite">Suite</option>
-      </select>
-      <select>
-        <option value="">All Statuses</option>
-        <option value="available">Available</option>
-        <option value="occupied">Occupied</option>
-      </select>
+      <div>
+        <label for="roomtype-select" class="block font-semibold mb-1">Room Type</label>
+        <select id="roomtype-select" class="w-full border p-2 rounded-lg">
+          <option value="">All Room Types</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="status-select" class="block font-semibold mb-1">Room Status</label>
+        <select id="status-select" class="w-full border p-2 rounded-lg">
+          <option value="">Any Status</option>
+          <option value="vacant">Vacant</option>
+          <option value="occupied">Occupied</option>
+        </select>
+      </div>
     </div>
 
-    <!-- Room Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Room No</th>
-          <th>Guesthouse</th>
-          <th>Room Type</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>101</td>
-          <td>Silver Oak</td>
-          <td>Single AC</td>
-          <td class="available">Available</td>
-        </tr>
-        <tr>
-          <td>102</td>
-          <td>Silver Oak</td>
-          <td>Double AC</td>
-          <td class="occupied">Occupied</td>
-        </tr>
-        <tr>
-          <td>203</td>
-          <td>Maple Residency</td>
-          <td>Single Non-AC</td>
-          <td class="available">Available</td>
-        </tr>
-        <tr>
-          <td>204</td>
-          <td>Maple Residency</td>
-          <td>Suite</td>
-          <td class="occupied">Occupied</td>
-        </tr>
-      </tbody>
-    </table>
+    <button id="check-btn" onclick="fetchRooms()"
+            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
+      Check Availability
+    </button>
 
-    <a href="{{url_for('student.student_guesthouses')}}" class="back-btn">← Back to Guesthouse Services</a>
+    <div class="overflow-x-auto mt-6">
+      <table class="min-w-full border border-gray-300 text-center">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="py-2 px-4 border">Room No</th>
+            <th class="py-2 px-4 border">Guesthouse</th>
+            <th class="py-2 px-4 border">Capacity</th>
+            <th class="py-2 px-4 border">Type</th>
+            <th class="py-2 px-4 border">Status</th>
+          </tr>
+        </thead>
+        <tbody id="room-table" class="bg-white">
+          <!-- Room data goes here -->
+        </tbody>
+      </table>
+    </div>
   </div>
+
+  <script>
+    // Load guesthouses
+    fetch('/student/api/guesthouses')
+      .then(res => res.json())
+      .then(data => {
+        const select = document.getElementById('guesthouse-select');
+        data.guesthouses.forEach(gh => {
+          const option = document.createElement('option');
+          option.value = gh;
+          option.textContent = gh;
+          select.appendChild(option);
+        });
+      });
+
+    // Load room types
+    fetch('/student/api/room-types')
+      .then(res => res.json())
+      .then(data => {
+        const select = document.getElementById('roomtype-select');
+        data.room_types.forEach(type => {
+          const option = document.createElement('option');
+          option.value = type;
+          option.textContent = type;
+          select.appendChild(option);
+        });
+      });
+
+    // Fetch rooms based on filters
+    function fetchRooms() {
+      const guesthouse = document.getElementById('guesthouse-select').value;
+      const roomType = document.getElementById('roomtype-select').value;
+      const status = document.getElementById('status-select').value;
+
+      const params = new URLSearchParams();
+      if (guesthouse) params.append('guesthouse_name', guesthouse);
+      if (roomType) params.append('room_type', roomType);
+      if (status) params.append('status', status);
+
+      fetch('/student/api/guestrooms?' + params.toString())
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById('room-table');
+          tbody.innerHTML = '';
+
+          if (data.rooms.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-red-500 font-semibold">No rooms found 😢</td></tr>`;
+            return;
+          }
+
+          data.rooms.forEach(room => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td class="border px-4 py-2">${room.room_no}</td>
+              <td class="border px-4 py-2">${room.guesthouse_name}</td>
+              <td class="border px-4 py-2">${room.capacity}</td>
+              <td class="border px-4 py-2">${room.type}</td>
+              <td class="border px-4 py-2">${room.status}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        });
+    }
+  </script>
 </body>
 </html>
