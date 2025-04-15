@@ -604,7 +604,7 @@ def get_guestrooms():
     return jsonify({'rooms': room_data})
 
 
-@student_bp.route('/guestroom-allotment-request')
+@student_bp.route('/guestroom-allotment-request', methods=["GET","POST"])
 def student_guestroom_allotment_request():
     if request.method == 'POST':
         if 'user_id' not in session or session.get('user_type') != 'student':
