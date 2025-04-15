@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError, IntegrityError, DataError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, Hostel, HostelRoom, db, Guesthouse, GuestRoom, HostelCheckInOut, MessCheckInOut
+from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, Hostel, HostelRoom, db, Guesthouse, GuestRoom, HostelCheckInOut, MessCheckInOut, GuestroomRequest
 import hashlib, secrets
 from datetime import datetime, timedelta
 import qrcode, io, base64
@@ -178,7 +178,103 @@ def student_profile():
         flash('Student profile not found.', 'danger')
         return redirect(url_for('student.student_dashboard'))
 
-    return render_template('User/Student/student_profile.html', student=student)
+    mess = Mess.query.filter_by(mess_id = student.mess_id).first()
+    
+    # Combine student info for QR content
+    qr_data = f"StudentID: {student.roll_no}\nName: {student.name}\nDepartment: {student.department}\nEmail: {student.email}\nMess: {mess.mess_name}\nHostel Name: {student.hostel_name}\nRoom No: {student.room_no}"
+
+    # Generate QR code
+    qr_img = qrcode.make(qr_data)
+    buffer = io.BytesIO()
+    qr_img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    return render_template('User/Student/student_profile.html', student=student, qr_code=qr_base64)
+
+@student_bp.route('/profile-update', methods=['GET', 'POST'])
+def student_profile_update():
+    if request.method == 'GET':
+        if 'user_id' not in session or session.get('user_type') != 'student':
+            flash('Please log in as a student first.', 'warning')
+            return redirect(url_for('student.student_login'))
+
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('student.student_login'))
+
+        student = Student.query.filter_by(email=user.username).first()
+        if not student:
+            flash('Student profile not found.', 'danger')
+            return redirect(url_for('student.student_dashboard'))
+
+        return render_template('User/Student/student_profile_update.html', student=student)
+
+    else:
+        # POST method: update the student's editable fields
+        if 'user_id' not in session or session.get('user_type') != 'student':
+            flash('Unauthorized access.', 'danger')
+            return redirect(url_for('student.student_login'))
+
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('student.student_login'))
+
+        student = Student.query.filter_by(email=user.username).first()
+        if not student:
+            flash('Student profile not found.', 'danger')
+            return redirect(url_for('student.student_dashboard'))
+
+        # Get form data
+        student.name = request.form['name']
+        student.department = request.form['department']
+        student.hostel_name = request.form['hostel_name']
+        student.room_no = request.form['room_number']
+        student.mess_id = request.form['mess_id']
+
+        try:
+            db.session.commit()
+            flash('Profile updated successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating profile.', 'danger')
+            print("Update Error:", e)
+
+        return redirect(url_for('student.student_profile'))
+    
+
+@student_bp.route('/profile-delete')
+def student_profile_delete():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    try:
+        db.session.delete(student)
+        db.session.delete(user)
+        db.session.commit()
+        session.clear()
+        flash('Your profile has been deleted successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while deleting your profile.', 'danger')
+        print("Deletion Error:", e)
+
+    return redirect(url_for('student.student_login'))
 
 @student_bp.route('/hostels')
 def student_hostel():
@@ -201,6 +297,29 @@ def student_hostel():
 
     return render_template('User/Student/student_hostels.html', student=student)
 
+
+@student_bp.route('/guestroom-requests')
+def student_view_guestroom_requests():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+    
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    # Get student using the user's email/username
+    student = Student.query.filter_by(email=user.username).first()
+
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    requests = GuestroomRequest.query.filter_by(referenced_by=student.roll_no).order_by(GuestroomRequest.created_at.desc()).all()
+    return render_template('User/Student/student_guestroom_requests.html', requests=requests)
 
 @student_bp.route('/hostelroom-availability')
 def student_hostelroom_availability():
@@ -300,8 +419,10 @@ def student_hostelroom_allotment_details():
     if not student:
         flash('Student profile not found.', 'danger')
         return redirect(url_for('student.student_dashboard'))
+    
+    roommates = Student.query.filter_by(room_no=student.room_no).all()
 
-    return render_template('User/Student/student_hostelroom_allotment_details.html', student=student)
+    return render_template('User/Student/student_hostelroom_allotment_details.html', student=student, roommates = roommates)
 
 @student_bp.route('/checkin-history')
 def student_checkin_history():

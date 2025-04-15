@@ -3,8 +3,8 @@ import io
 import pandas as pd
 from flask import send_file
 from io import BytesIO
-from flask import Blueprint, render_template, request, session, flash, redirect, url_for, jsonify
-from app.models import User, db,  MessCheckInOut, Student, Mess
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for, jsonify,jsonify
+from app.models import User, db,  MessCheckInOut, Student, Mess,Hostel,HostelRoom,Student
 from werkzeug.security import check_password_hash
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -192,20 +192,36 @@ def admin_monitor_hostelroom_vacancies():
 
     return render_template('Admin/admin_monitor_hostelroom_vacancies.html', user=user)
 
-@admin_bp.route('/manage-student-details')
+@admin_bp.route('/manage-student-details', methods=['GET', 'POST'])
 def admin_manage_student_details():
     if 'user_id' not in session or session.get('user_type') != 'admin':
         flash('Please log in as an admin first.', 'warning')
         return redirect(url_for('admin.admin_login'))  # Make sure this route exists
-
     user_id = session['user_id']
     user = User.query.filter_by(user_id=user_id, role='Admin').first()
-
     if not user:
         flash('Admin user not found.', 'danger')
         return redirect(url_for('admin.admin_login'))
+    hostels = Hostel.query.all()
+    students = []
+    if request.method == 'POST':
+        hostel_name = request.form.get('hostel')
+        room_number = request.form.get('room')
+        if hostel_name and room_number:
+            students = Student.query.filter_by(hostel_name=hostel_name, room_no=room_number).all()
 
-    return render_template('Admin/admin_manage_student_details.html', user=user)
+    return render_template('Admin/admin_manage_student_details.html',
+                           hostels=hostels,
+                           students=students)
+
+@admin_bp.route('/get-rooms/<hostel_name>', methods=['GET'])
+def get_rooms(hostel_name):
+    # Fetch rooms for the selected hostel_name from the HostelRoom table
+    rooms = HostelRoom.query.filter_by(hostel_name=hostel_name).all()
+    # Extract room numbers or room names
+    room_list = [room.room_no for room in rooms]
+    return jsonify(room_list)
+
 
 
 @admin_bp.route('/mess')
