@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import db, User, Staff, Member ,MemberGroupMapping, Login
+from app.models import db, User, Staff, Member ,MemberGroupMapping, Login, GuestroomRequest
+import qrcode, io, base64
 import re
 
 staff_bp = Blueprint('staff', __name__, url_prefix='/staff')
@@ -164,8 +165,94 @@ def staff_profile():
     if not staff:
         flash('Staff profile not found.', 'danger')
         return redirect(url_for('staff.staff_dashboard'))
+    
+    # Combine student info for QR content
+    qr_data = f"StaffID: {staff.staff_id}\nName: {staff.name}\nDepartment: {staff.department}\nEmail: {staff.email}"
 
-    return render_template('User/Staff/staff_profile.html', staff=staff, user=user)
+    # Generate QR code
+    qr_img = qrcode.make(qr_data)
+    buffer = io.BytesIO()
+    qr_img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+
+    return render_template('User/Staff/staff_profile.html', staff=staff, user=user, qr_code=qr_base64)
+
+@staff_bp.route('/profile-update',methods=['GET','POST'])
+def staff_profile_update():
+    if request.methos == 'GET':
+        if 'user_id' not in session or session.get('user_type') != 'staff':
+            flash('Please log in as a staff first.', 'warning')
+            return redirect(url_for('staff.staff_login'))
+
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('staff.staff_login'))
+
+        staff = Staff.query.filter_by(email=user.username).first()
+        if not staff:
+            flash('Staff profile not found.', 'danger')
+            return redirect(url_for('staff.staff_dashboard'))
+        return render_template('User/Staff/staff_profile_update.html', staff=staff, user=user)
+    
+    else:
+        if 'user_id' not in session or session.get('user_type') != 'staff':
+            flash('Please log in as a staff first.', 'warning')
+            return redirect(url_for('staff.staff_login'))
+
+        user_id = session['user_id']
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            flash('User not found.', 'danger')
+            return redirect(url_for('staff.staff_login'))
+
+        staff = Staff.query.filter_by(email=user.username).first()
+        if not staff:
+            flash('Staff profile not found.', 'danger')
+            return redirect(url_for('staff.staff_dashboard'))
+        
+        # Get form data
+        staff.name = request.form['name']
+        staff.department = request.form['department']
+        staff.email = request.form['email']
+        staff.contact_no = request.form['contact']
+
+        try:
+            db.session.commit()
+            flash('Profile updated successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating profile.', 'danger')
+            print("Update Error:", e)
+
+        return redirect(url_for('staff.staff_profile'))
+    
+
+@staff_bp.route('/guestroom-requests')
+def staff_view_guestroom_requests():
+    if 'user_id' not in session or session.get('user_type') != 'staff':
+        flash('Please log in as a staff first.', 'warning')
+        return redirect(url_for('staff.staff_login'))
+    
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('staff.staff_login'))
+
+    # Get staff using the user's email/username
+    staff = Staff.query.filter_by(email=user.username).first()
+
+    if not staff:
+        flash('Staff profile not found.', 'danger')
+        return redirect(url_for('staff.staff_dashboard'))
+
+    requests = GuestroomRequest.query.filter_by(referenced_by=staff.staff_id).order_by(GuestroomRequest.created_at.desc()).all()
+    return render_template('User/Staff/staff_guestroom_requests.html', requests=requests)
+
 
 @staff_bp.route('/guesthouses')
 def staff_guesthouses():

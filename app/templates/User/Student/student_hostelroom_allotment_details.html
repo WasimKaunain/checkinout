@@ -104,13 +104,13 @@
 
     <div class="info-card">
       <div class="info-item">
-        {{ name }}
+        {{ student.name }}
       </div>
       <div class="info-item">
-        {{ hostel_name }}
+        {{ student.hostel_name }}
       </div>
       <div class="info-item">
-        {{ room_number }}
+        {{ student.room_no }}
       </div>
       <div class="info-item">
         <strong>Roommates:</strong>
@@ -118,16 +118,14 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Roll Number</th>
-              <th>Branch</th>
+              <th>Department</th>
             </tr>
           </thead>
           <tbody>
             {% for rm in roommates %}
               <tr>
                 <td>{{ rm.name }}</td>
-                <td>{{ rm.roll }}</td>
-                <td>{{ rm.branch }}</td>
+                <td>{{ rm.department }}</td>
               </tr>
             {% endfor %}
           </tbody>

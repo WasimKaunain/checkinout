@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from sqlalchemy.sql import func
 
 db = SQLAlchemy()
 
@@ -160,4 +161,28 @@ class MessCheckInOut(db.Model):
     mess_id = db.Column(db.Integer, db.ForeignKey('mess.mess_id', ondelete='CASCADE'))
     checkin_time = db.Column(db.DateTime, nullable=False)
 
+class GuestroomRequest(db.Model):
+    __tablename__ = 'GuestroomRequest'
 
+    request_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(30), nullable=False)
+    email = db.Column(db.String(30), nullable=False)
+    contact_no = db.Column(db.String(10), nullable=False)
+    
+    guesthouse_name = db.Column(
+        db.Enum('Harmony Guesthouse', 'Moonlight Guesthouse', 'Starlight Guesthouse'),
+        nullable=False
+    )
+    room_type = db.Column(db.String(10), nullable=False)
+    checkindate = db.Column(db.Date, nullable=False)
+    checkoutdate = db.Column(db.Date, nullable=False)
+    duration_of_stay = db.Column(db.Integer, nullable=False)
+    purpose = db.Column(db.String(500), nullable=False)
+    
+    referenced_by = db.Column(db.String(10), nullable=False)  
+    status = db.Column(
+        db.Enum('Pending', 'Accepted', 'Rejected'),
+        default='Pending',
+        nullable=True)
+    created_at = db.Column(db.DateTime, default=func.now())
+    

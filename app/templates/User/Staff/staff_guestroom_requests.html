@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guestroom Requests</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .dashboard {
+      max-width: 1000px;
+      margin: auto;
+      background-color: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logout-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #e11d48;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .logout-icon:hover {
+      background-color: #b91c1c;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #1e3a8a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table th, table td {
+      padding: 12px 15px;
+      border: 1px solid #d1d5db;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    table th {
+      background-color: #eff6ff;
+      color: #1e3a8a;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+
+    .status-Pending {
+      color: orange;
+      font-weight: bold;
+    }
+
+    .status-Accepted {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-Rejected {
+      color: red;
+      font-weight: bold;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <a href="{{url_for('main.home')}}" class="logout-icon"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-hotel"></i> Guestroom Requests</h1>
+
+    {% if requests %}
+      <table>
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Name</th>
+            <th>Guesthouse</th>
+            <th>Room Type</th>
+            <th>Check-in</th>
+            <th>Duration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in requests %}
+          <tr>
+            <td>{{ req.request_id }}</td>
+            <td>{{ req.name }}</td>
+            <td>{{ req.guesthouse_name }}</td>
+            <td>{{ req.room_type }}</td>
+            <td>{{ req.checkindate.strftime('%Y-%m-%d') }}</td>
+            <td>{{ req.duration_of_stay }} day(s)</td>
+            <td class="status-{{ req.status }}">{{ req.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No guestroom requests found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('staff.staff_profile') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+  </div>
+</body>
+</html>
