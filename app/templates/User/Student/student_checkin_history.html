@@ -13,7 +13,7 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
       background: #fff;
       padding: 30px;
@@ -43,13 +43,13 @@
     h2 {
       text-align: center;
       color: #1e3a8a;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     th, td {
@@ -61,6 +61,12 @@
     th {
       background-color: #e0ecff;
       color: #1e3a8a;
+    }
+
+    td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .back-btn {
@@ -76,6 +82,14 @@
     .back-btn:hover {
       background-color: #1e40af;
     }
+
+    .filter-dropdown {
+      margin-bottom: 20px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
@@ -84,23 +98,89 @@
 
     <h2><i class="fas fa-clock-rotate-left"></i> Hostel Check-In History</h2>
 
+    <!-- Filter Dropdown -->
+    <select class="filter-dropdown" id="filter-select">
+      <option value="today">Today</option>
+      <option value="week">This Week</option>
+      <option value="month">This Month</option>
+    </select>
+
     <table>
       <thead>
         <tr>
           <th>Date</th>
           <th>Room Number</th>
           <th>Hostel</th>
+          <th>Check-In Time</th>
+          <th>Check-Out Time</th>
           <th>Duration</th>
+          <th>Status</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Sample data -->
-        <tr><td>2024-11-15</td><td>G105</td><td>Maple Hostel</td><td>2 Days</td></tr>
-        <tr><td>2024-12-01</td><td>F202</td><td>Oak Hostel</td><td>1 Week</td></tr>
+      <tbody id="history-table-body">
+        <tr><td colspan="7">Loading...</td></tr>
       </tbody>
     </table>
 
     <a href="{{url_for('student.student_hostel')}}" class="back-btn">← Back to Room Services</a>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tableBody = document.getElementById('history-table-body');
+      const filterSelect = document.getElementById('filter-select');
+
+      const formatDate = (datetime) => {
+        return new Date(datetime).toISOString().split('T')[0];
+      };
+
+      const formatTime = (datetime) => {
+        const time = new Date(datetime).toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+        return time;
+      };
+
+      const fetchHistory = (filter) => {
+        tableBody.innerHTML = `<tr><td colspan="7">Loading...</td></tr>`;
+        fetch(`/student/get_student_checkin_history_table?filter=${filter}`)
+          .then(res => res.json())
+          .then(data => {
+            if (!data || data.length === 0) {
+              tableBody.innerHTML = `<tr><td colspan="7">No records found.</td></tr>`;
+              return;
+            }
+
+            tableBody.innerHTML = '';
+            data.forEach(entry => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${formatDate(entry.date)}</td>
+                <td>${entry.room_no}</td>
+                <td>${entry.hostel_name}</td>
+                <td>${formatTime(entry.checkin_time)}</td>
+                <td>${entry.checkout_time ? formatTime(entry.checkout_time) : 'Still Checked In'}</td>
+                <td>${entry.duration}</td>
+                <td>${entry.status}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          })
+          .catch(err => {
+            console.error(err);
+            tableBody.innerHTML = `<tr><td colspan="7">Error loading data.</td></tr>`;
+          });
+      };
+
+      filterSelect.addEventListener('change', () => {
+        const selectedFilter = filterSelect.value;
+        fetchHistory(selectedFilter);
+      });
+
+      fetchHistory('today');  // Fetch data for today by default
+    });
+  </script>
 </body>
 </html>

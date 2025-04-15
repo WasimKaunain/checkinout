@@ -100,6 +100,10 @@
     .back-btn:hover {
       background-color: #1e40af;
     }
+
+    ul {
+      padding-left: 20px;
+    }
   </style>
 </head>
 <body>
@@ -117,8 +121,8 @@
       </div>
 
       <div>
-        <label for="room">Room Number</label>
-        <input type="text" name="room" id="room" placeholder="e.g. B102" required
+        <label for="room">Room Number (optional)</label>
+        <input type="text" name="room" id="room" placeholder="e.g. B102"
                pattern="^[A-L][0-9]{3}$" title="Format must be one letter A–L followed by 3 digits (e.g., A102)">
       </div>
 
@@ -126,16 +130,23 @@
     </form>
 
     <div class="result-box" id="room-result" style="display:none;">
-      <strong>Status:</strong> <span id="room-status"></span><br>
-      <strong>Room Type:</strong> <span id="room-type"></span><br>
-      <strong>Hostel:</strong> <span id="room-guesthouse"></span>
+      <div id="single-result" style="display:none;">
+        <strong>Status:</strong> <span id="room-status"></span><br>
+        <strong>Room Type:</strong> <span id="room-type"></span><br>
+        <strong>Hostel:</strong> <span id="room-guesthouse"></span>
+      </div>
+
+      <div id="multiple-result" style="display:none;">
+        <strong>Vacant Rooms:</strong>
+        <ul id="available-rooms-list"></ul>
+      </div>
     </div>
 
     <a href="{{url_for('student.student_hostel')}}" class="back-btn">← Back to Room Services</a>
   </div>
 
   <script>
-    // Load hostels from backend on page load
+    // Load hostels on page load
     window.addEventListener('DOMContentLoaded', () => {
       fetch('/student/get_hostels')
         .then(res => res.json())
@@ -154,14 +165,18 @@
         });
     });
 
-    // Form submission to check room availability
     document.getElementById('availability-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
       const hostel = document.getElementById('hostel').value;
-      const room = document.getElementById('room').value;
+      const room = document.getElementById('room').value.trim();
 
-      if (!/^[A-L][0-9]{3}$/.test(room)) {
+      if (!hostel) {
+        alert("Please select a hostel.");
+        return;
+      }
+
+      if (room && !/^[A-L][0-9]{3}$/.test(room)) {
         alert("Room number format invalid. Use A-L followed by 3 digits (e.g., B102).");
         return;
       }
@@ -169,18 +184,39 @@
       fetch('/student/check_room_status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hostel: hostel, room: room })
+        body: JSON.stringify({ hostel, room })
       })
       .then(res => res.json())
       .then(data => {
+        const resultBox = document.getElementById('room-result');
+        const singleResult = document.getElementById('single-result');
+        const multipleResult = document.getElementById('multiple-result');
+        resultBox.style.display = 'block';
+        singleResult.style.display = 'none';
+        multipleResult.style.display = 'none';
+
         if (data.error) {
           alert(data.error);
-          document.getElementById('room-result').style.display = 'none';
-        } else {
+          resultBox.style.display = 'none';
+          return;
+        }
+
+        if (data.status) {
+          // Specific room
           document.getElementById('room-status').textContent = data.status;
-          document.getElementById('room-type').textContent = `${data.status === 'Vacant' ? 'Available' : 'Occupied'} - Capacity Based`;
-          document.getElementById('room-guesthouse').textContent = hostel;
-          document.getElementById('room-result').style.display = 'block';
+          document.getElementById('room-type').textContent = data.room_type;
+          document.getElementById('room-guesthouse').textContent = data.guesthouse;
+          singleResult.style.display = 'block';
+        } else if (data.available_rooms) {
+          // List of vacant rooms
+          const list = document.getElementById('available-rooms-list');
+          list.innerHTML = '';
+          data.available_rooms.forEach(r => {
+            const li = document.createElement('li');
+            li.textContent = `${r.room_no} (${r.room_type})`;
+            list.appendChild(li);
+          });
+          multipleResult.style.display = 'block';
         }
       })
       .catch(() => {

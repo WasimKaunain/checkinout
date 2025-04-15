@@ -98,36 +98,62 @@
 </head>
 <body>
   <div class="container">
-    <a href="{{ url_for('main.home') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
 
-    <h1><i class="fas fa-file-invoice"></i> Mess Check-In/Out Reports</h1>
+    <h1><i class="fas fa-file-invoice"></i> Mess Check In Out Reports</h1>
 
-    <table>
-      <tr>
-        <th>Entry ID</th>
-        <th>Student Name</th>
-        <th>Mess</th>
-        <th>Check-In</th>
-        <th>Check-Out</th>
-      </tr>
-      {% for entry in report_entries %}
-      <tr>
-        <td>{{ entry.entry_id }}</td>
-        <td>{{ entry.student_name }}</td>
-        <td>{{ entry.mess_name }}</td>
-        <td>{{ entry.check_in_time }}</td>
-        <td>{{ entry.check_out_time }}</td>
-      </tr>
-      {% endfor %}
+    <table id="report-table">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>User Type</th>
+          <th>Mess</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="report-body">
+        <!-- Fetched data will be inserted here -->
+      </tbody>
     </table>
 
-    <form method="post" action="export.html">
+    <!-- Updated route here for Export to Excel -->
+    <form method="post" action="/admin/export_mess_checkins">
       <button class="btn" type="submit">
         <i class="fas fa-download"></i> Export to Excel
       </button>
     </form>
 
-    <a href="{{url_for('admin.admin_mess')}}" class="back-btn">← Back to Manage Mess</a>
+    <a href="{{ url_for('admin.admin_mess') }}" class="back-btn">← Back to Manage Mess</a>
   </div>
+
+  <script>
+    window.onload = async () => {
+      try {
+        const response = await fetch('/admin/get_mess_checkin_history');
+        const data = await response.json();
+        const tableBody = document.getElementById('report-body');
+
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = ` 
+              <td>${entry.user_id}</td>
+              <td>${entry.user_type}</td>
+              <td>${entry.mess_name}</td>
+              <td>${entry.date}</td>
+              <td>${entry.time}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          tableBody.innerHTML = '<tr><td colspan="5">No data found.</td></tr>';
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+        document.getElementById('report-body').innerHTML = '<tr><td colspan="5">Error fetching data.</td></tr>';
+      }
+    };
+  </script>
 </body>
 </html>

@@ -2,12 +2,14 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError, IntegrityError, DataError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, Hostel, HostelRoom, db, Guesthouse, GuestRoom
+from app.models import User, Student, Member ,MemberGroupMapping, Login, Mess, Hostel, HostelRoom, db, Guesthouse, GuestRoom, HostelCheckInOut, MessCheckInOut
 import hashlib, secrets
 from datetime import datetime, timedelta
 import qrcode, io, base64
 import re
-
+from datetime import datetime, timedelta
+from flask import session, jsonify
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
@@ -235,16 +237,32 @@ def check_room_status():
     hostel = data.get('hostel')
     room_no = data.get('room')
 
-    room = HostelRoom.query.filter_by(hostel_name=hostel, room_no=room_no).first()
-    
-    if not room:
-        return jsonify({'error': 'Room not found'}), 404
+    if not hostel:
+        return jsonify({'error': 'Hostel name is required'}), 400
 
-    return jsonify({
-        'status': room.status,
-        'room_type': f"{room.capacity}-Sharing",  # Just an assumption!
-        'guesthouse': hostel  # you could customize this if needed
-    })
+    if room_no:
+        # Specific room check
+        room = HostelRoom.query.filter_by(hostel_name=hostel, room_no=room_no).first()
+        if not room:
+            return jsonify({'error': 'Room not found'}), 404
+
+        return jsonify({
+            'status': room.status,
+            'room_type': f"{room.capacity}-Sharing",
+            'guesthouse': hostel
+        })
+    else:
+        # Fetch all vacant rooms for the hostel
+        rooms = HostelRoom.query.filter_by(hostel_name=hostel, status='Vacant').all()
+        available_rooms = [{
+            'room_no': r.room_no,
+            'room_type': f"{r.capacity}-Sharing"
+        } for r in rooms]
+
+        if not available_rooms:
+            return jsonify({'error': 'No vacant rooms found in this hostel.'}), 404
+
+        return jsonify({'available_rooms': available_rooms})
 
 
 @student_bp.route('/hostelroom-vacancy-update')
@@ -304,6 +322,83 @@ def student_checkin_history():
 
     return render_template('User/Student/student_checkin_history.html', student=student)
 
+
+
+@student_bp.route('/get_student_checkin_history_table')
+def get_student_checkin_history_table():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    # Get filter parameter
+    filter = request.args.get('filter', 'today')
+
+    now = datetime.now()
+    if filter == 'today':
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    elif filter == 'week':
+        start_date = now - timedelta(days=now.weekday())  # Start of the week (Monday)
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date + timedelta(days=6, hours=23, minutes=59, seconds=59)
+    elif filter == 'month':
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    else:
+        return jsonify({"error": "Invalid filter"}), 400
+
+    records = db.session.query(HostelCheckInOut).filter(HostelCheckInOut.user_id == user_id,
+                                                          HostelCheckInOut.checkin_time >= start_date,
+                                                          HostelCheckInOut.checkin_time <= end_date).all()
+    if not records:
+        return jsonify([])
+
+    def calculate_duration(checkin, checkout):
+        if not checkout:
+            return "Still Checked In"
+        diff = checkout - checkin
+        return str(diff.days) + " Day" + ("s" if diff.days > 1 else "") if diff.days != 0 else "Same Day"
+
+    def calculate_status(checkin, checkout):
+        now = datetime.now()
+        if checkout and checkout <= now:
+            return "Completed"
+        elif not checkout:
+            return "Still Checked In"
+        elif checkin > now:
+            return "Upcoming"
+        return "Completed"
+
+    result_list = []
+    for r in records:
+        checkin_time = r.checkin_time.isoformat() if r.checkin_time else None
+        checkout_time = r.checkout_time.isoformat() if r.checkout_time else None
+
+        duration = calculate_duration(r.checkin_time, r.checkout_time)
+        status = calculate_status(r.checkin_time, r.checkout_time)
+
+        result_list.append({
+            "date": r.checkin_time.date().isoformat() if r.checkin_time else None,
+            "hostel_name": r.hostel_name,
+            "room_no": r.room_no,
+            "checkin_time": checkin_time,
+            "checkout_time": checkout_time,
+            "duration": duration,
+            "status": status
+        })
+
+    return jsonify(result_list)
 
 @student_bp.route('/guesthouses')
 def student_guesthouses():
@@ -448,6 +543,60 @@ def student_mess_checkin_history():
         return redirect(url_for('student.student_dashboard'))
 
     return render_template('User/Student/student_mess_checkin_history.html', student=student)
+
+@student_bp.route('/get_student_mess_checkin_history_table')
+def get_student_mess_checkin_history_table():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Please log in as a student first.', 'warning')
+        return redirect(url_for('student.student_login'))
+
+    user_id = session['user_id']
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('student.student_login'))
+
+    student = Student.query.filter_by(email=user.username).first()
+    if not student:
+        flash('Student profile not found.', 'danger')
+        return redirect(url_for('student.student_dashboard'))
+
+    # Get the filter param
+    filter = request.args.get('filter', 'today')
+    now = datetime.now()
+
+    if filter == 'today':
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    elif filter == 'week':
+        start_date = now - timedelta(days=now.weekday())
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date + timedelta(days=6, hours=23, minutes=59, seconds=59)
+    elif filter == 'month':
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+    else:
+        return jsonify({"error": "Invalid filter"}), 400
+
+    # Proper JOIN between MessCheckInOut and Mess
+    records = db.session.query(MessCheckInOut, Mess).join(
+        Mess, Mess.mess_id == MessCheckInOut.mess_id
+    ).filter(
+        MessCheckInOut.user_id == user_id,
+        MessCheckInOut.checkin_time >= start_date,
+        MessCheckInOut.checkin_time <= end_date
+    ).order_by(MessCheckInOut.checkin_time.desc()).all()
+
+    result_list = []
+    for checkin, mess in records:
+        result_list.append({
+            "date": checkin.checkin_time.strftime('%Y-%m-%d'),
+            "mess_name": mess.mess_name if mess else "N/A",
+            "checkin_time": checkin.checkin_time.strftime('%H:%M:%S')
+        })
+
+    return jsonify(result_list)
+
 
 @student_bp.route('/mess-allotment-details')
 def student_mess_allotment_details():

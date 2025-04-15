@@ -1,5 +1,10 @@
-from flask import Blueprint, render_template, request, session, flash, redirect, url_for
-from app.models import User, db
+import re
+import io
+import pandas as pd
+from flask import send_file
+from io import BytesIO
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for, jsonify
+from app.models import User, db,  MessCheckInOut, Student, Mess
 from werkzeug.security import check_password_hash
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -126,15 +131,6 @@ def admin_manage_visitor_details():
 
     return render_template('Admin/admin_manage_visitor_details.html', user=user)
 
-
-
-
-
-
-
-
-
-
 @admin_bp.route('/hostels')
 def admin_hostels():
     if 'user_id' not in session or session.get('user_type') != 'admin':
@@ -242,6 +238,79 @@ def admin_generate_mess_reports():
 
     return render_template('Admin/admin_generate_mess_report.html', user=user)
 
+
+@admin_bp.route('/get_mess_checkin_history', methods=['GET'])
+def get_mess_checkin_history():
+    try:
+        checkin_history = db.session.query(MessCheckInOut).all()
+
+        results = []
+
+        for record in checkin_history:
+            checkin_date = record.checkin_time.date().strftime('%Y-%m-%d')  # Format date
+            checkin_time = record.checkin_time.time().strftime('%H:%M:%S')  # Format time
+            
+            # Fetch the mess_name from the Mess model using mess_id
+            mess = db.session.query(Mess).filter(Mess.mess_id == record.mess_id).first()
+            mess_name = mess.mess_name if mess else "Unknown"  # Default to "Unknown" if no mess found
+
+            results.append({
+                'user_id': record.user_id,
+                'user_type': record.user_type,
+                'mess_name': mess_name,
+                'date': checkin_date,
+                'time': checkin_time
+            })
+
+        return jsonify(results)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+@admin_bp.route('/export_mess_checkins', methods=['POST'])
+def export_mess_checkin_history():
+    try:
+        # Fetch the mess check-in/out history from the database
+        checkin_history = db.session.query(MessCheckInOut).all()
+
+        # Prepare data for export (as a list of dictionaries)
+        data = []
+        for record in checkin_history:
+            checkin_date = record.checkin_time.date().strftime('%Y-%m-%d')
+            checkin_time = record.checkin_time.time().strftime('%H:%M:%S')
+            
+            # Fetch mess name
+            mess = db.session.query(Mess).filter(Mess.mess_id == record.mess_id).first()
+            mess_name = mess.mess_name if mess else "Unknown"
+            
+            data.append({
+                'user_id': record.user_id,
+                'user_type': record.user_type,
+                'mess_name': mess_name,
+                'date': checkin_date,
+                'time': checkin_time
+            })
+
+        # Create a pandas DataFrame
+        df = pd.DataFrame(data)
+
+        # Use XlsxWriter engine to write the DataFrame to an Excel file
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Mess Check In Out History')
+
+        # Save the content to a file and send it as a response
+        output.seek(0)
+        return send_file(output, as_attachment=True, download_name="mess_checkin_history.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
+
 @admin_bp.route('/manage-mess-details')
 def admin_manage_mess_details():
     if 'user_id' not in session or session.get('user_type') != 'admin':
@@ -256,3 +325,29 @@ def admin_manage_mess_details():
         return redirect(url_for('admin.admin_login'))
 
     return render_template('Admin/admin_manage_mess_details.html', user=user)
+
+@admin_bp.route('/get_all_mess')
+def get_all_mess():
+    try:
+        messes = Mess.query.with_entities(Mess.mess_id, Mess.mess_name).all()
+        mess_list = [{"mess_id": m.mess_id, "name": m.mess_name} for m in messes]
+        return jsonify(mess_list)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@admin_bp.route('/get_mess_details/<int:mess_id>')
+def get_mess_details(mess_id):
+    try:
+        mess = Mess.query.get(mess_id)
+        if not mess:
+            return jsonify({"error": "Mess not found"}), 404
+
+        students = Student.query.filter_by(mess_id=mess_id).all()
+        student_rolls = [s.roll_no for s in students]
+
+        return jsonify({
+            "capacity": mess.capacity,
+            "student_count": len(student_rolls)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
