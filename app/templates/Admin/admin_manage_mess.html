@@ -13,7 +13,7 @@
     }
 
     .container {
-      max-width: 850px;
+      max-width: 900px;
       margin: auto;
       background-color: rgba(255, 255, 255, 0.95);
       padding: 30px;
@@ -43,26 +43,26 @@
     h1 {
       text-align: center;
       color: #1e3a8a;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+    .cards-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
     }
 
     .card-btn {
       background-color: #f1f5ff;
-      padding: 20px;
-      border-radius: 12px;
+      padding: 25px;
+      border-radius: 14px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
       transition: transform 0.2s, background-color 0.2s;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      text-decoration: None;
+      width: 280px;
+      text-decoration: none;
+      color: inherit;
     }
 
     .card-btn:hover {
@@ -71,13 +71,14 @@
     }
 
     .card-btn i {
-      font-size: 32px;
-      margin-bottom: 10px;
+      font-size: 36px;
+      margin-bottom: 12px;
       color: #2563eb;
     }
 
     .card-btn h3 {
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      font-size: 18px;
       color: #1e3a8a;
     }
 
@@ -87,14 +88,16 @@
     }
 
     .back-btn {
-      display: inline-block;
-      margin-top: 30px;
+      display: block;
+      margin: 40px auto 0;
       background-color: #2563eb;
       color: white;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 15px;
       border-radius: 10px;
       text-decoration: none;
+      width: max-content;
+      transition: background-color 0.3s;
     }
 
     .back-btn:hover {
@@ -107,7 +110,8 @@
     <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
 
     <h1><i class="fas fa-utensils"></i> Manage Mess</h1>
-    <div class="cards">
+
+    <div class="cards-row">
       <a href="{{ url_for('admin.admin_manage_mess_details') }}" class="card-btn">
         <i class="fas fa-clipboard-list"></i>
         <h3>Manage All Messes</h3>

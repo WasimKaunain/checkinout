@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Approved Guestroom Requests</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #e3f2fd, #fce4ec);
+            margin: 0;
+            padding: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .request-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .request-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .request-card h3 {
+            margin-top: 0;
+            color: #1e88e5;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .request-details p {
+            margin: 6px 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        
+    .edit-btn {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 10px 20px;
+      background-color: #2563eb;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .edit-btn:hover {
+      background-color: #1e40af;
+    }
+
+    .delete-btn {
+      display: inline-block;
+      margin-top: 25px;
+      margin-left: 10px;
+      padding: 10px 20px;
+      background-color: #dc3545;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .delete-btn:hover {
+      background-color: #b02a37;
+    }
+
+        .request-details strong {
+            color: #37474f;
+        }
+
+        .back-btn, .logout-btn {
+            margin: 10px;
+            padding: 10px 25px;
+            border: none;
+            background: linear-gradient(to right, #42a5f5, #ab47bc);
+            color: white;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-decoration: None;
+        }
+
+        .back-btn:hover, .logout-btn:hover {
+            background: linear-gradient(to right, #1e88e5, #8e24aa);
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .no-data {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #757575;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="action-bar">
+        <a href="{{url_for('admin.admin_dashboard')}}" class="back-btn"><i class="fas fa-pen"></i> Back to Dashboard</a>
+        <a href="{{url_for('admin.admin_logout')}}" class="logout-btn"><i class="fas fa-pen"></i> Logout</a>    
+    </div>
+
+    <h2>Approved Guestroom Requests</h2>
+
+    {% for req in approved_requests %}
+    <div class="request-card">
+        <h3>Request ID: {{ req.request_id }}</h3>
+        <div class="request-details">
+            <p><strong>Name:</strong> {{ req.name }}</p>
+            <p><strong>Email:</strong> {{ req.email }}</p>
+            <p><strong>Contact No:</strong> {{ req.contact_no }}</p>
+            <p><strong>Guesthouse:</strong> {{ req.guesthouse_name }}</p>
+            <p><strong>Room Type:</strong> {{ req.room_type }}</p>
+            <p><strong>Check-In:</strong> {{ req.checkindate }}</p>
+            <p><strong>Check-Out:</strong> {{ req.checkoutdate }}</p>
+            <p><strong>Duration:</strong> {{ req.duration_of_stay }} days</p>
+            <p><strong>Purpose:</strong> {{ req.purpose }}</p>
+            <p><strong>Referenced By:</strong> {{ req.referenced_by }}</p>
+            <p><strong>Status:</strong> {{ req.status }}</p>
+            <p><strong>Allotted Room:</strong> {{ req.allotted_room }}</p>
+            <p><strong>Submitted On:</strong> {{ req.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+    </div>
+    {% else %}
+    <p class="no-data">No approved guestroom requests found.</p>
+    {% endfor %}
+
+</body>
+</html>

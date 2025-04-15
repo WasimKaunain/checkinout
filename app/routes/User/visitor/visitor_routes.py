@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
 from app.models import db, User, Visitor, Student, Staff, Member ,MemberGroupMapping, Login
+import qrcode, io, base64
 import re
 
 visitor_bp = Blueprint('visitor', __name__, url_prefix='/visitor')
@@ -183,10 +184,30 @@ def visitor_profile():
 
     visitor = Visitor.query.filter_by(email=user.username).first()
     if not visitor:
-        flash('visitor profile not found.', 'danger')
+        flash('Visitor profile not found.', 'danger')
         return redirect(url_for('visitor.visitor_dashboard'))
 
-    return render_template('User/visitor/visitor_profile.html', visitor=visitor)
+    # Combine visitor info for QR content
+    qr_data = (
+        f"Visitor ID: {visitor.visitor_id}\n"
+        f"Name: {visitor.name}\n"
+        f"Email: {visitor.email}\n"
+        f"Gender: {visitor.gender}\n"
+        f"Contact No: {visitor.contact_no}\n"
+        f"Guesthouse: {visitor.guesthouse_name}\n"
+        f"Room No: {visitor.room_no}\n"
+        f"Duration of Stay: {visitor.duration_of_stay} days\n"
+        f"Purpose: {visitor.purpose}\n"
+        f"Reference: {visitor.reference}"
+    )
+
+    # Generate QR code
+    qr_img = qrcode.make(qr_data)
+    buffer = io.BytesIO()
+    qr_img.save(buffer, format="PNG")
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+    return render_template('User/Visitor/visitor_profile.html', visitor=visitor, qr_code=qr_base64)
 
 @visitor_bp.route('/guesthouses')
 def visitor_guesthouses():

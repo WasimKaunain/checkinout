@@ -123,6 +123,15 @@
 <body>
   <div class="container">
     <h1><i class="fas fa-user-graduate"></i> Student Registration</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <form method="POST" action="{{ url_for('student.student_register') }}">
       <div class="form-group">
         <label for="name">Student Name</label>
@@ -163,12 +172,30 @@
 
       <div class="form-group">
         <label for="hostel">Hostel Name</label>
-        <input type="text" id="hostel" name="hostel" required>
+        <select id="hostel" name="hostel" required onchange="updateRooms()">
+          <option value="">Select Hostel</option>
+          <option value="Aibaan">Aibaan</option>
+          <option value="Beauki">Beauki</option>
+          <option value="Chimair">Chimair</option>
+          <option value="Duven">Duven</option>
+          <option value="Emiet">Emiet</option>
+          <option value="Firpeal">Firpeal</option>
+          <option value="Griwiksh">Griwiksh</option>
+          <option value="Hiqom">Hiqom</option>
+          <option value="Ijokha">Ijokha</option>
+          <option value="Jurqia">Jurqia</option>
+          <option value="Kyzeel">Kyzeel</option>
+          <option value="Lekhaag">Lekhaag</option>
+        </select>
       </div>
+      
       <div class="form-group">
         <label for="room">Room Number</label>
-        <input type="text" id="room" name="room" required>
+        <select id="room" name="room" required>
+          <option value="">Select Room</option>
+        </select>
       </div>
+      
       <div class="form-group">
         <label for="messid">Mess ID</label>
         <input type="text" id="messid" name="messid" required>

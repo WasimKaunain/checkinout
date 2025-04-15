@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Staff Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .edit-container {
+      max-width: 700px;
+      margin: auto;
+      background-color: #ffffffdd;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+
+    .logout-btn:hover {
+      background-color: #dc2626;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 25px;
+    }
+
+    form label {
+      font-weight: 600;
+      margin-top: 15px;
+      display: block;
+      color: #2563eb;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .btn {
+      margin-top: 25px;
+      width: 100%;
+      background-color: #2563eb;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #1e40af;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 25px;
+      background-color: #6b7280;
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="edit-container">
+    <!-- Logout button -->
+    <a href="index.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+    <h1><i class="fas fa-user-edit"></i> Edit Staff Profile</h1>
+
+    <form method="POST" action="{{ url_for('edit_staff_profile', staff_id=staff.id) }}">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" value="{{ staff.name }}" required>
+
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" value="{{ staff.email }}" required>
+
+      <label for="contact">Contact</label>
+      <input type="tel" name="contact" id="contact" value="{{ staff.contact }}" pattern="[0-9]{10}" maxlength="10" required>
+
+      <label for="department">Department</label>
+      <input type="text" name="department" id="department" value="{{ staff.department }}" required>
+
+      <label for="role">Role</label>
+      <input type="text" name="role" id="role" value="{{ staff.role }}" required>
+
+      <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
+    </form>
+
+    <a href="staff_profile.html" class="back-btn">← Cancel & Back</a>
+  </div>
+
+</body>
+</html>
