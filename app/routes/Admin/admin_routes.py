@@ -4,7 +4,7 @@ import pandas as pd
 from flask import send_file
 from io import BytesIO
 from flask import Blueprint, render_template, request, session, flash, redirect, url_for, jsonify,jsonify
-from app.models import User, db,  MessCheckInOut, Student, Mess,Hostel,HostelRoom,Student
+from app.models import User, db,  MessCheckInOut, Student, Mess,Hostel,HostelRoom,Student, GuestroomRequest, GuestRoom
 from werkzeug.security import check_password_hash
 import random
 
@@ -284,7 +284,7 @@ def admin_monitor_hostelroom_vacancies():
 
     return render_template('Admin/admin_monitor_hostelroom_vacancies.html', user=user)
 
-@admin_bp.route('/manage-student-details')
+@admin_bp.route('/manage-student-details',methods=['GET','POST'])
 def admin_manage_student_details():
     if 'user_id' not in session or session.get('user_type') != 'admin':
         flash('Please log in as an admin first.', 'warning')
@@ -302,9 +302,7 @@ def admin_manage_student_details():
         if hostel_name and room_number:
             students = Student.query.filter_by(hostel_name=hostel_name, room_no=room_number).all()
 
-    return render_template('Admin/admin_manage_student_details.html',
-                           hostels=hostels,
-                           students=students)
+    return render_template('Admin/admin_manage_student_details.html',hostels=hostels, students=students)
 
 @admin_bp.route('/get-rooms/<hostel_name>', methods=['GET'])
 def get_rooms(hostel_name):
