@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Check-In History</title>
+  <title>Mess Check-In History</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
@@ -13,7 +13,7 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       background: #fff;
       padding: 30px;
@@ -43,7 +43,20 @@
     h2 {
       text-align: center;
       color: #1e3a8a;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+    }
+
+    .filter-section {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
     table {
@@ -76,30 +89,90 @@
     .back-btn:hover {
       background-color: #1e40af;
     }
+
+    .no-records {
+      text-align: center;
+      font-style: italic;
+      color: #888;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <a href="{{url_for('main.home')}}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <a href="{{ url_for('main.home') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
 
     <h2><i class="fas fa-clock-rotate-left"></i> Mess Check-In History</h2>
 
-    <table>
+    <div class="filter-section">
+      <label for="filter">View: </label>&nbsp;
+      <select id="filter">
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+    </div>
+
+    <table id="history-table">
       <thead>
         <tr>
           <th>Date</th>
-          <th>Mess</th>
-          <th>Duration</th>
+          <th>Mess Name</th>
+          <th>Check-In Time</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Sample data -->
-        <tr><td>2024-11-15</td><td>Jaiswal Mess</td><td>2 Days</td></tr>
-        <tr><td>2024-12-01</td><td>Mohani Mess</td><td>1 Week</td></tr>
+      <tbody id="table-body">
+        <!-- Dynamic data here -->
       </tbody>
     </table>
 
-    <a href="{{url_for('student.student_mess')}}" class="back-btn">← Back to Room Services</a>
+    <div id="no-records" class="no-records" style="display: none;">No records found for this filter.</div>
+
+    <a href="{{ url_for('student.student_mess') }}" class="back-btn">← Back to Room Services</a>
   </div>
+
+  <script>
+    const filterDropdown = document.getElementById('filter');
+    const tableBody = document.getElementById('table-body');
+    const noRecordsMsg = document.getElementById('no-records');
+
+    const fetchData = async (filter) => {
+      try {
+        const response = await fetch(`/student/get_student_mess_checkin_history_table?filter=${filter}`);
+        const data = await response.json();
+
+        tableBody.innerHTML = '';
+        if (!data || data.length === 0 || data.error) {
+          noRecordsMsg.style.display = 'block';
+          return;
+        }
+
+        noRecordsMsg.style.display = 'none';
+
+        data.forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${entry.date || '-'}</td>
+            <td>${entry.mess_name || 'N/A'}</td>
+            <td>${entry.checkin_time || '-'}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
+    };
+
+    // Load default (today) data on page load
+    window.onload = () => {
+      fetchData('today');
+    };
+
+    // Fetch on filter change
+    filterDropdown.addEventListener('change', () => {
+      const selected = filterDropdown.value;
+      fetchData(selected);
+    });
+  </script>
 </body>
 </html>

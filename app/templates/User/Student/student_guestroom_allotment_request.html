@@ -61,6 +61,10 @@
       font-size: 15px;
     }
 
+    input[readonly] {
+      background-color: #f5f5f5;
+    }
+
     .btn {
       margin-top: 25px;
       width: 100%;
@@ -126,7 +130,7 @@
     <h1><i class="fas fa-envelope-open-text"></i> Guestroom Allotment Request</h1>
 
     <!-- Allotment Form -->
-    <form action="submit_guestroom_request.php" method="POST">
+    <form action="{{ url_for('student.student_guestroom_allotment_request') }}" method="POST">
       <label for="visitor_name">Name</label>
       <input type="text" id="visitor_name" name="visitor_name" required>
 
@@ -139,24 +143,27 @@
       <label for="guesthouse">Guesthouse</label>
       <select id="guesthouse" name="guesthouse" required>
         <option value="">-- Select Guesthouse --</option>
-        <option value="Silver Oak">Silver Oak</option>
-        <option value="Maple Residency">Maple Residency</option>
+        <option value="Harmony Guesthouse">Harmony Guesthouse</option>
+        <option value="Moonlight Guesthouse">Moonlight Guesthouse</option>
+        <option value="Starlight Guesthouse">Starlight Guesthouse</option>
       </select>
 
       <label for="room_type">Room Type</label>
       <select id="room_type" name="room_type" required>
         <option value="">-- Select Room Type --</option>
-        <option value="Single AC">Single AC</option>
-        <option value="Double AC">Double AC</option>
-        <option value="Single Non-AC">Single Non-AC</option>
+        <option value="Single">Single</option>
+        <option value="Double">Double</option>
         <option value="Suite">Suite</option>
       </select>
 
       <label for="checkin_date">Check-in Date</label>
-      <input type="date" id="checkin_date" name="checkin_date" required>
+      <input type="date" id="checkin_date" name="checkin_date" required min="">
 
       <label for="checkout_date">Check-out Date</label>
       <input type="date" id="checkout_date" name="checkout_date" required>
+
+      <label for="duration">Duration of Stay</label>
+      <input type="text" id="duration" name="duration" readonly>
 
       <label for="purpose">Purpose of Visit</label>
       <textarea id="purpose" name="purpose" rows="3" placeholder="e.g., Conference, Meeting, Family visit..." required></textarea>
@@ -179,5 +186,68 @@
 
     <a href="{{url_for('student.student_guesthouses')}}" class="back-btn">← Back to Guesthouse</a>
   </div>
+
+  <script>
+    const checkinInput = document.getElementById('checkin_date');
+    const checkoutInput = document.getElementById('checkout_date');
+    const durationInput = document.getElementById('duration');
+
+    // Set today's date as min value
+    const today = new Date().toISOString().split('T')[0];
+    checkinInput.setAttribute('min', today);
+
+    function calculateDuration() {
+      const checkinDate = new Date(checkinInput.value);
+      const checkoutDate = new Date(checkoutInput.value);
+      const todayDate = new Date(today);
+
+      if (!isNaN(checkinDate) && checkinDate < todayDate) {
+        alert("Check-in date cannot be before today's date!");
+        checkinInput.value = '';
+        durationInput.value = '';
+        return;
+      }
+
+      if (!isNaN(checkinDate) && !isNaN(checkoutDate)) {
+        if (checkoutDate < checkinDate) {
+          alert("Check-out date cannot be before Check-in date!");
+          checkoutInput.value = '';
+          durationInput.value = '';
+          return;
+        }
+        const diffTime = checkoutDate - checkinDate;
+        const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        durationInput.value = days + ' day(s)';
+      } else {
+        durationInput.value = '';
+      }
+    }
+
+    checkinInput.addEventListener('change', () => {
+      const checkinDate = new Date(checkinInput.value);
+      const todayDate = new Date(today);
+
+      if (checkinDate < todayDate) {
+        alert("Check-in date cannot be before today's date!");
+        checkinInput.value = '';
+        durationInput.value = '';
+        return;
+      }
+
+      if (checkoutInput.value) {
+        const checkoutDate = new Date(checkoutInput.value);
+        if (checkinDate > checkoutDate) {
+          alert("Check-in date cannot be after Check-out date!");
+          checkinInput.value = '';
+          durationInput.value = '';
+          return;
+        }
+      }
+
+      calculateDuration();
+    });
+
+    checkoutInput.addEventListener('change', calculateDuration);
+  </script>
 </body>
 </html>

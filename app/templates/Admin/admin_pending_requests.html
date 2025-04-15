@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pending Guestroom Requests</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fdfbfb, #ebedee);
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 30px;
+    }
+
+    .request-card {
+      background-color: #f1f5ff;
+      border-left: 6px solid #2563eb;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .request-meta {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      text-align: right;
+    }
+
+    .request-meta p {
+      margin: 2px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .request-card h3 {
+      margin: 0 0 10px;
+      color: #1e3a8a;
+    }
+
+    .request-card p {
+      margin: 6px 0;
+      color: #333;
+    }
+
+    .action-form {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    select, textarea, button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    textarea {
+      display: none;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: #1e40af;
+    }
+
+    .placeholder-name {
+      font-style: italic;
+      color: #666;
+      margin-left: 10px;
+    }
+
+    .rejection-reason {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-hourglass-half"></i> Pending Guestroom Requests</h1>
+
+    {% if requests %}
+      {% for req in requests %}
+        <div class="request-card">
+          <div class="request-meta">
+            <p><strong>ID:</strong> {{ req.request_id }}</p>
+            <p><strong>Created At:</strong> {{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+          </div>
+
+          <h3><i class="fas fa-id-badge"></i> Referenced By: {{ req.referenced_by }}</h3>
+          
+          <p><strong>Name on Form:</strong> {{ req.name }}</p>
+          <p><strong>Email:</strong> {{ req.email }}</p>
+          <p><strong>Contact:</strong> {{ req.contact_no }}</p>
+          <p><strong>Guesthouse:</strong> {{ req.guesthouse_name }}</p>
+          <p><strong>Room Type:</strong> {{ req.room_type }}</p>
+          <p><strong>Check-in:</strong> {{ req.checkindate }} | <strong>Check-out:</strong> {{ req.checkoutdate }}</p>
+          <p><strong>Duration:</strong> {{ req.duration_of_stay }} days</p>
+          <p><strong>Purpose:</strong> {{ req.purpose }}</p>
+
+          <form method="POST" action="{{ url_for('admin.admin_pending_requests')}}" class="action-form" onsubmit="return validateRejection(this)">
+            <input type="hidden" name="request_id" value="{{ req.request_id }}">
+            <select name="decision" class="decision-select" onchange="toggleReasonField(this)">
+                <option value="">-- Select --</option>
+                <option value="Accepted">Approve</option>
+                <option value="Rejected">Reject</option>
+            </select>
+            <textarea name="rejection_reason" class="rejection-reason" style="display:none;" placeholder="Reason for rejection"></textarea>
+            <button type="submit">Submit</button>
+        </form>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No pending requests found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('admin.admin_guesthouses') }}" class="back-btn">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    function toggleReasonField(selectElem) {
+      const form = selectElem.closest('form');
+      const textarea = form.querySelector('.rejection-reason');
+      if (selectElem.value === 'Rejected') {
+        textarea.style.display = 'block';
+        textarea.setAttribute('required', 'required');
+      } else {
+        textarea.style.display = 'none';
+        textarea.removeAttribute('required');
+      }
+    }
+
+    function validateRejection(form) {
+      const decision = form.querySelector('.decision-select').value;
+      const reason = form.querySelector('.rejection-reason');
+      if (decision === 'Rejected' && reason.value.trim() === '') {
+        alert("Please provide a reason for rejection.");
+        reason.focus();
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

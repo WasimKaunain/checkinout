@@ -185,4 +185,5 @@ class GuestroomRequest(db.Model):
         default='Pending',
         nullable=True)
     created_at = db.Column(db.DateTime, default=func.now())
-    
+    allotted_room=db.Column(db.String, nullable=True)
+    reject_reason=db.Column(db.String, nullable=True)
