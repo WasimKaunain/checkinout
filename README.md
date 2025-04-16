@@ -120,7 +120,8 @@
     │   └── api.py
     ├── run.py
     ├── .env
-    ├── congig.py
+    ├── Scripts
+    ├── utils
     ├── requirements.txt
     ├── config.py
     └── README.md
