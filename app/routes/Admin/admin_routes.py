@@ -184,7 +184,9 @@ def admin_rejected_requests():
         flash('Admin user not found.', 'danger')
         return redirect(url_for('admin.admin_login'))
 
-    return render_template('Admin/admin_rejected_requests.html', user=user)
+    rejected_requests = GuestroomRequest.query.filter_by(status='Rejected').order_by(GuestroomRequest.created_at.desc()).all()
+
+    return render_template('Admin/admin_rejected_requests.html', user=user, rejected_requests=rejected_requests)
 
 
 
