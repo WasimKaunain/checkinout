@@ -79,7 +79,7 @@
 ---
 
 ## 🧭 File & Directory Structurecheckinout/
-.
+```
 └── checkinout/
     ├── app/
     │   ├── __init__.py
@@ -122,7 +122,8 @@
     ├── config.py
     └── README.md
 
----
+```
+--+
 
 ## 🧪 Setup & Installation
 
