@@ -79,8 +79,7 @@
 ---
 
 ## 🧭 File & Directory Structure
-<pre lang="text"><code> checkinout/ ├── app/ │ ├── __init__.py │ ├── models.py │ ├── routes/ │ │ ├── auth.py │ │ ├── student.py │ │ ├── staff.py │ │ ├── visitor.py │ │ └── admin.py │ ├── templates/ │ │ ├── student/ │ │ │ ├── profile.html │ │ │ └── guestroom_status.html │ │ ├── login.html │ │ └── dashboard.html │ ├── static/ │ │ ├── css/ │ │ └── images/ ├── database/ │ ├── init.sql │ └── triggers.sql ├── qr/ │ └── generate_qr.py ├── mobile_api/ │ └── api.py ├── run.py ├── config.py └── README.md </code></pre>
-
+<pre> ``` checkinout/ ├── app/ │ ├── __init__.py │ ├── models.py │ ├── routes/ │ │ ├── auth.py │ │ ├── student.py │ │ ├── staff.py │ │ ├── visitor.py │ │ └── admin.py │ ├── templates/ │ │ ├── student/ │ │ │ ├── profile.html │ │ │ └── guestroom_status.html │ │ ├── login.html │ │ └── dashboard.html │ ├── static/ │ │ ├── css/ │ │ └── images/ ├── database/ │ ├── init.sql │ └── triggers.sql ├── qr/ │ └── generate_qr.py ├── mobile_api/ │ └── api.py ├── run.py ├── config.py └── README.md ``` </pre>
 ---
 
 ## 🧪 Setup & Installation
