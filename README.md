@@ -78,8 +78,48 @@
 
 ---
 
-## 🧭 File & Directory Structure
-<pre> ``` checkinout/ ├── app/ │ ├── __init__.py │ ├── models.py │ ├── routes/ │ │ ├── auth.py │ │ ├── student.py │ │ ├── staff.py │ │ ├── visitor.py │ │ └── admin.py │ ├── templates/ │ │ ├── student/ │ │ │ ├── profile.html │ │ │ └── guestroom_status.html │ │ ├── login.html │ │ └── dashboard.html │ ├── static/ │ │ ├── css/ │ │ └── images/ ├── database/ │ ├── init.sql │ └── triggers.sql ├── qr/ │ └── generate_qr.py ├── mobile_api/ │ └── api.py ├── run.py ├── config.py └── README.md ``` </pre>
+## 🧭 File & Directory Structurecheckinout/
+├── app/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── student/
+│   │   │   └── student.py
+│   │   ├── staff/
+│   │   │   └── staff.py
+│   │   ├── visitor/
+│   │   │   └── visitor.py
+│   │   └── auth.py
+│   ├── templates/
+│   │   ├── __init__.py
+│   │   ├── Admin/
+│   │   │   └── dashboard.html
+│   │   ├── Users/
+│   │   │   ├── Student/
+│   │   │   │   ├── profile.html
+│   │   │   │   └── guestroom_status.html
+│   │   │   ├── Staff/
+│   │   │   │   └── profile.html
+│   │   │   └── Visitors/
+│   │   │       └── profile.html
+│   │   ├── login.html
+│   │   └── base.html
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css
+│   │   └── images/
+├── database/
+│   ├── init.sql
+│   └── triggers.sql
+├── qr/
+│   └── generate_qr.py
+├── mobile_api/
+│   └── api.py
+├── run.py
+├── config.py
+└── README.md
+
 ---
 
 ## 🧪 Setup & Installation
