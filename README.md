@@ -119,6 +119,9 @@
     ├── mobile_api/
     │   └── api.py
     ├── run.py
+    ├── .env
+    ├── congig.py
+    ├── requirements.txt
     ├── config.py
     └── README.md
 
@@ -141,6 +144,8 @@ cd checkinout
 
 # Set up environment
 pip install -r requirements.txt
+
+#Set up you .env file containing database congiguration details
 
 # Initialize MySQL DB
 mysql -u root -p < database/init.sql
