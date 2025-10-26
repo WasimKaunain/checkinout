@@ -5,7 +5,7 @@
 # Ignore environment files (if storing DB credentials here)
 .env
 .env.local
-checkinout/
+venv/
 
 # Ignore system files
 .DS_Store
