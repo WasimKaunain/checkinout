@@ -112,6 +112,7 @@
             <th>Check-in</th>
             <th>Duration</th>
             <th>Status</th>
+            <th>Reason</th>
           </tr>
         </thead>
         <tbody>
@@ -124,6 +125,7 @@
             <td>{{ req.checkindate.strftime('%Y-%m-%d') }}</td>
             <td>{{ req.duration_of_stay }} day(s)</td>
             <td class="status-{{ req.status }}">{{ req.status }}</td>
+            <td>{{ req.reject_reason }}</td>
           </tr>
           {% endfor %}
         </tbody>

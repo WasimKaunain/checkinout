@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import db, User, Staff, Member ,MemberGroupMapping, Login, GuestroomRequest
+from app.models import db, User, Staff, GuestroomRequest
 import qrcode, io, base64
 import re
 
@@ -105,23 +105,6 @@ def staff_register():
             db.session.add(staff)
 
             # Commit first to ensure data is valid before inserting into the other DB
-            db.session.commit()
-
-            # Now insert into Member (cs432cims DB using bind 'eval')
-            member = Member(UserName=custom_user_id, emailID=email)
-            db.session.add(member)
-            db.session.commit()
-
-            # Get the auto-incremented member.id
-            member_id = member.ID
-            login = Login(MemberID=member_id, Password=hashed_password, Role='Staff')
-            db.session.add(login)
-            db.session.commit()
-
-            # Insert into MemberGroupMapping with group_id = 5
-            mapping = MemberGroupMapping(MemberID=member_id, GroupID=5)
-            db.session.add(mapping)
-
             db.session.commit()
         
             flash("Staff registered successfully!", "success")

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import IntegrityError, DataError, OperationalError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import db, User, Visitor, Student, Staff, Member ,MemberGroupMapping, Login
+from app.models import db, User, Visitor, Student, Staff
 import qrcode, io, base64
 import re
 
@@ -120,22 +120,6 @@ def visitor_register():
             db.session.add(visitor)
 
             # Commit first to ensure data is valid before inserting into the other DB
-            db.session.commit()
-
-            # Now insert into Member (cs432cims DB using bind 'eval')
-            member = Member(UserName=custom_user_id, emailID=email)
-            db.session.add(member)
-            db.session.commit()
-
-            # Get the auto-incremented member.id
-            member_id = member.ID
-            login = Login(MemberID=member_id, Password=hashed_password, Role='Visitor')
-            db.session.add(login)
-            db.session.commit()
-
-            # Insert into MemberGroupMapping with group_id = 5
-            mapping = MemberGroupMapping(MemberID=member_id, GroupID=5)
-            db.session.add(mapping)
             db.session.commit()
 
             flash('Visitor registered successfully!', 'success')
@@ -310,7 +294,7 @@ def visitor_guesthouses():
         flash('visitor profile not found.', 'danger')
         return redirect(url_for('visitor.visitor_dashboard'))
 
-    return render_template('User/visitor/visitor_guesthouses.html', visitor=visitor)
+    return render_template('User/Visitor/visitor_guesthouses.html', visitor=visitor)
 
 
 @visitor_bp.route('/guestroom-availability')
@@ -330,7 +314,7 @@ def visitor_guestroom_availability():
         flash('visitor profile not found.', 'danger')
         return redirect(url_for('visitor.visitor_dashboard'))
 
-    return render_template('User/visitor/visitor_guestroom_availability.html', visitor=visitor)
+    return render_template('User/Visitor/visitor_guestroom_availability.html', visitor=visitor)
 
 @visitor_bp.route('/id-card-generation')
 def visitor_id_card_generation():
@@ -349,6 +333,6 @@ def visitor_id_card_generation():
         flash('visitor profile not found.', 'danger')
         return redirect(url_for('visitor.visitor_dashboard'))
 
-    return render_template('User/visitor/visitor_id_card_generation.html', visitor=visitor)
+    return render_template('User/Visitor/visitor_id_card_generation.html', visitor=visitor)
 
 

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError, IntegrityError, DataError
 from app.utils.id_generator import generate_custom_user_id
-from app.models import User, Student, Member , MemberGroupMapping, Login, Mess, Hostel, HostelRoom, GuestroomRequest, Hostel, HostelRoom, db, Guesthouse, GuestRoom, HostelCheckInOut, MessCheckInOut, GuestroomRequest
+from app.models import User, Student, Mess, Hostel, HostelRoom, GuestroomRequest, Hostel, HostelRoom, db, Guesthouse, GuestRoom, HostelCheckInOut, MessCheckInOut, GuestroomRequest
 import hashlib, secrets
 from datetime import datetime, timedelta
 import qrcode, io, base64
@@ -95,7 +95,6 @@ def student_register():
             return redirect(url_for('student.student_register'))
 
         hashed_password = generate_password_hash(password)
-
         try:
             # Generate custom user ID
             custom_user_id = generate_custom_user_id('Student')
@@ -118,22 +117,6 @@ def student_register():
             db.session.add(student)
 
             # Commit first to ensure data is valid before inserting into the other DB
-            db.session.commit()
-
-            # Now insert into Member (cs432cims DB using bind 'eval')
-            member = Member(UserName=custom_user_id, emailID=email)
-            db.session.add(member)
-            db.session.commit()
-
-            # Get the auto-incremented member.id
-            member_id = member.ID
-            login = Login(MemberID=member_id, Password=hashed_password, Role='Student')
-            db.session.add(login)
-            db.session.commit()
-
-            # Insert into MemberGroupMapping with group_id = 5
-            mapping = MemberGroupMapping(MemberID=member_id, GroupID=5)
-            db.session.add(mapping)
             db.session.commit()
 
             flash('Registration successful!', 'success')
