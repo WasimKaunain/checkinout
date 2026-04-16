@@ -10,7 +10,7 @@ staff_bp = Blueprint('staff', __name__, url_prefix='/staff')
 
 @staff_bp.route('/login-register')
 def staff_login_register():
-    return render_template('User/staff/staff_login_reg.html')
+    return render_template('User/Staff/staff_login_reg.html')
 
 @staff_bp.route('/login', methods=['GET', 'POST'])
 def staff_login():
