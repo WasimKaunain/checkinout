@@ -28,4 +28,10 @@ __pycache__/
 #ignore pdf files
 *.pdf
 
+# Ignore DB Schema files
+/Db Schema
+/docs
+/sql_scripts/insert_data.sql
+/sql_scripts/queries.sql
+/Material
 
