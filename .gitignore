@@ -29,9 +29,4 @@ __pycache__/
 *.pdf
 
 # Ignore DB Schema files
-/Db Schema
-/docs
-/sql_scripts/insert_data.sql
-/sql_scripts/queries.sql
-/Material
-
+/Docs
